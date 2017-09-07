@@ -3,4 +3,4 @@
 # and open the template in the editor.
 
 print("Hello World")
-print("Hessel is een home")
+print("Hessel is een homo")
