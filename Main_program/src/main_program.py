@@ -2,5 +2,6 @@
 # To change this template file, choose Tools | Templates
 # and open the template in the editor.
 
+
 print("Hello World")
-print("Hessel is een homo")
+print("Hessel is een homo") #it is true
