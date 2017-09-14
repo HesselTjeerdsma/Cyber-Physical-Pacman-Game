@@ -11,4 +11,9 @@ void setup(){
  
 }
  
-void loop(){}
+void loop(){
+   Serial.println();
+   Serial.print("MAC: ");
+   Serial.println(WiFi.macAddress());
+   delay(5000);
+   }
