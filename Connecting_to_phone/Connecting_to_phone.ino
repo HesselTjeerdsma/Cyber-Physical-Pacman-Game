@@ -2,13 +2,28 @@
 
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
+#include <ESP8266WebServer.h>
+
+ESP8266WebServer server(50001);
+
+
 
 const char* ssid = "Huawei AP";
 const char* password = "teamtitanic";
 
-const char* host = "http://pacman.autonomic-networks.ele.tue.nl/register";
-const int httpsPort = 80;
+char* host = NULL;
+String message = "";
+int httpCode = 0;
 HTTPClient http;
+int i=0;
+void handleRoot() {
+  i++;
+  Serial.print("Got request: ");
+  Serial.println(i);
+  Serial.println(server.args());
+  Serial.println(server.arg(0));
+  server.send(200,"text/plain", "hello from esp8266!");
+}
 
 void setup() {
   // put your setup code here, to run once:
@@ -26,20 +41,16 @@ void setup() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+  server.begin();
+
+  server.on("/event/location", handleRoot);
+  host = "http://pacman.autonomic-networks.ele.tue.nl/register";
   Serial.print("connecting to ");
-  Serial.println(host);
-
-  
-  
-}
-
-
-void loop() {
-  // put your main code here, to run repeatedly:
+  Serial.println(host);  
   http.begin(host);
-  String message = "{ \"name\": \"Grappig\" }";
+  message = "{ \"name\": \"Grappig\" }";
   Serial.println("Send Post");
-  int httpCode = http.POST(message);
+  httpCode = http.POST(message);
   
   if(httpCode > 0){
     Serial.printf("[HTTP] POST... code: %d\n", httpCode);
@@ -52,5 +63,16 @@ void loop() {
     }
   
   http.end();
-  delay(5000);
+  
+}
+
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  
+
+  server.handleClient();
+  delay(100);
+  
+  
 }
