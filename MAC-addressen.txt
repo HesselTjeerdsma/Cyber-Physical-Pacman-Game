@@ -2,3 +2,4 @@ Nodemcu1 v0.9: 		2C:3A:E8:0F:14:26
 Nodemcu2 v0.9: 		A0:20:A6:13:0C:CC
 Nodemcu3 v1.0: 		60:01:94:49:A3:6D
 Laptop Diederik: 	E4:B3:18:8B:A5:D3
+Phone Jonathon: 	30:07:4D:9F:32:53
