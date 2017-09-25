@@ -1,10 +1,10 @@
 
 
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
-#include <ESP8266WebServer.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <ESP32WebServer.h>
 
-ESP8266WebServer server(50001);
+ESP32WebServer server(50001);
 
 
 
@@ -16,7 +16,7 @@ String message = "";
 int httpCode = 0;
 HTTPClient http;
 int i=0;
-void handleRoot() {
+void event_location(){
   i++;
   Serial.print("Got request: ");
   Serial.println(i);
@@ -24,7 +24,70 @@ void handleRoot() {
   Serial.println(server.arg(0));
   server.send(200,"text/plain", "hello from esp8266!");
 }
-
+void event_food(){
+  i++;
+  Serial.print("Got request: ");
+  Serial.println(i);
+  Serial.println(server.args());
+  Serial.println(server.arg(0));
+  server.send(200,"text/plain", "hello from esp8266!");
+}
+void event_cherry(){
+  i++;
+  Serial.print("Got request: ");
+  Serial.println(i);
+  Serial.println(server.args());
+  Serial.println(server.arg(0));
+  server.send(200,"text/plain", "hello from esp8266!");
+}
+void event_energizer(){
+  i++;
+  Serial.print("Got request: ");
+  Serial.println(i);
+  Serial.println(server.args());
+  Serial.println(server.arg(0));
+  server.send(200,"text/plain", "hello from esp8266!");
+}
+void event_cherry_spawned(){
+  i++;
+  Serial.print("Got request: ");
+  Serial.println(i);
+  Serial.println(server.args());
+  Serial.println(server.arg(0));
+  server.send(200,"text/plain", "hello from esp8266!");
+}
+void event_collision(){
+  i++;
+  Serial.print("Got request: ");
+  Serial.println(i);
+  Serial.println(server.args());
+  Serial.println(server.arg(0));
+  server.send(200,"text/plain", "hello from esp8266!");
+}
+void event_quarantine(){
+  i++;
+  Serial.print("Got request: ");
+  Serial.println(i);
+  Serial.println(server.args());
+  Serial.println(server.arg(0));
+  server.send(200,"text/plain", "hello from esp8266!");
+}
+void event_game_over(){
+  i++;
+  Serial.print("Got request: ");
+  Serial.println(i);
+  Serial.println(server.args());
+  Serial.println(server.arg(0));
+  server.send(200,"text/plain", "hello from esp8266!");
+}
+void event_game_won(){
+  i++;
+  Serial.print("Got request: ");
+  Serial.println(i);
+  Serial.println(server.args());
+  Serial.println(server.arg(0));
+  server.send(200,"text/plain", "hello from esp8266!");
+}
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200); //connect to wifi hotspot
@@ -42,8 +105,18 @@ void setup() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
   server.begin();
-
-  server.on("/event/location", handleRoot);
+  
+  //setting up all listing ports
+  server.on("/event/location", event_location);
+  server.on("/event/food", event_food);
+  server.on("/event/cherry", event_cherry);
+  server.on("/event/energizer", event_energizer);
+  server.on("/event/cherry_spawned", event_cherry_spawned);
+  server.on("/event/collision", event_collision);
+  server.on("/event/quarantine", event_quarantine);
+  server.on("/event/game_over", event_game_over);
+  server.on("/event/game_won", event_game_won);
+  
   host = "http://pacman.autonomic-networks.ele.tue.nl/register";
   Serial.print("connecting to ");
   Serial.println(host);  
