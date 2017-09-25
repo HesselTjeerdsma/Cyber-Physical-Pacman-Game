@@ -24,11 +24,11 @@ boolean use_processing = false;                         // set this to true to o
 
 const uint8_t num_anchors = 4;                                    // the number of anchors
 uint16_t anchors[num_anchors] = {0x6847, 0x6877, 0x6170, 0x6169};     // the network id of the anchors: change these to the network ids of your anchors.
-int32_t anchors_x[num_anchors] = {0, 0.819, 11.745, 17.923};               // anchor x-coorindates in mm
-int32_t anchors_y[num_anchors] = {2.499, 2.595, 2.621, 2.655};                  // anchor y-coordinates in mm
-int32_t heights[num_anchors] = {0.05, 25.828, 0, 25.836};              // anchor z-coordinates in mm
+int32_t anchors_x[num_anchors] = {0, 0, 11, 17};               // anchor x-coorindates in mm
+int32_t anchors_y[num_anchors] = {2, 2, 2, 2};                  // anchor y-coordinates in mm
+int32_t heights[num_anchors] = {0, 25, 0, 25};              // anchor z-coordinates in mm
 
-uint8_t algorithm = POZYX_POS_ALG_TRACKING;             // positioning algorithm to use. try POZYX_POS_ALG_TRACKING for fast moving objects.
+uint8_t algorithm = POZYX_POS_ALG_UWB_ONLY;            // positioning algorithm to use. try POZYX_POS_ALG_TRACKING for fast moving objects.
 uint8_t dimension = POZYX_3D;                           // positioning dimension
 int32_t height = 1000;                                  // height of device, required in 2.5D positioning
 
