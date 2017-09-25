@@ -1,10 +1,10 @@
 
 
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
-#include <ESP8266WebServer.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <ESP32WebServer.h>
 
-ESP8266WebServer server(50001);
+ESP32WebServer server(50001);
 
 
 
