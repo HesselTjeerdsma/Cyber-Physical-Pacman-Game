@@ -1,9 +1,3 @@
-/* 
- *  This example shows how to use WPA2 enterprise 
- *  Written by: Jeroen Beemster
- *  12 July 2017
- *  Version 1.00
- */
 
 #include "esp_wpa2.h"
 #include <WiFi.h>
