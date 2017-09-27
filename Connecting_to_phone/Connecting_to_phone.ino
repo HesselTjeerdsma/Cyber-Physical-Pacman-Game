@@ -1,100 +1,123 @@
 
 
 #include <WiFi.h>
+#include "esp_wpa2.h"
 #include <HTTPClient.h>
 #include <ESP32WebServer.h>
 
 ESP32WebServer server(50001);
 
 
-
-const char* ssid = "Huawei AP";
-const char* password = "teamtitanic";
+const char* ssid = "tue-wpa2"; // your ssid
+#define EAP_ID "d.a.w.markus@student.tue.nl"
+#define EAP_USERNAME "s169013"
+#define EAP_PASSWORD ""
 
 char* host = NULL;
 String message = "";
 int httpCode = 0;
 HTTPClient http;
 int i=0;
+
 void event_location(){
   i++;
   Serial.print("Got request: ");
   Serial.println(i);
+  Serial.println("Location request");
   Serial.println(server.args());
   Serial.println(server.arg(0));
-  server.send(200,"text/plain", "hello from esp8266!");
+  server.send(200,"application/json; charset=utf-8", "hello from esp8266!");
 }
 void event_food(){
   i++;
   Serial.print("Got request: ");
   Serial.println(i);
+  Serial.println("Food request");
   Serial.println(server.args());
   Serial.println(server.arg(0));
-  server.send(200,"text/plain", "hello from esp8266!");
+  server.send(200,"application/json; charset=utf-8", "hello from esp8266!");
 }
 void event_cherry(){
   i++;
   Serial.print("Got request: ");
   Serial.println(i);
+  Serial.println("Cherry request");
   Serial.println(server.args());
   Serial.println(server.arg(0));
-  server.send(200,"text/plain", "hello from esp8266!");
+  server.send(200,"application/json; charset=utf-8", "hello from esp8266!");
 }
 void event_energizer(){
   i++;
   Serial.print("Got request: ");
   Serial.println(i);
+  Serial.println("Energizer request");
   Serial.println(server.args());
   Serial.println(server.arg(0));
-  server.send(200,"text/plain", "hello from esp8266!");
+  server.send(200,"application/json; charset=utf-8", "hello from esp8266!");
 }
 void event_cherry_spawned(){
   i++;
   Serial.print("Got request: ");
   Serial.println(i);
+  Serial.println("Cherry Spawned request");
   Serial.println(server.args());
   Serial.println(server.arg(0));
-  server.send(200,"text/plain", "hello from esp8266!");
+  server.send(200,"application/json; charset=utf-8", "hello from esp8266!");
 }
 void event_collision(){
   i++;
   Serial.print("Got request: ");
   Serial.println(i);
+  Serial.println("Collision request");
   Serial.println(server.args());
   Serial.println(server.arg(0));
-  server.send(200,"text/plain", "hello from esp8266!");
+  server.send(200,"application/json; charset=utf-8", "hello from esp8266!");
 }
 void event_quarantine(){
   i++;
   Serial.print("Got request: ");
   Serial.println(i);
+  Serial.println("Quarantine request");
   Serial.println(server.args());
   Serial.println(server.arg(0));
-  server.send(200,"text/plain", "hello from esp8266!");
+  server.send(200,"application/json; charset=utf-8", "hello from esp8266!");
 }
 void event_game_over(){
   i++;
   Serial.print("Got request: ");
   Serial.println(i);
+  Serial.println("Game over request");
   Serial.println(server.args());
   Serial.println(server.arg(0));
-  server.send(200,"text/plain", "hello from esp8266!");
+  server.send(200,"application/json; charset=utf-8", "hello from esp8266!");
 }
 void event_game_won(){
   i++;
   Serial.print("Got request: ");
   Serial.println(i);
+  Serial.println("Game won request");
   Serial.println(server.args());
   Serial.println(server.arg(0));
-  server.send(200,"text/plain", "hello from esp8266!");
+  server.send(200,"application/json; charset=utf-8", "hello from esp8266!");
 }
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200); //connect to wifi hotspot
+  delay(10);
   Serial.println();
   Serial.print("connecting to ");
   Serial.println(ssid);
-  WiFi.begin(ssid, password);
+  
+  // WPA2 enterprise magic starts here
+  WiFi.disconnect(true);      
+  esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)EAP_ID, strlen(EAP_ID));
+  esp_wifi_sta_wpa2_ent_set_username((uint8_t *)EAP_USERNAME, strlen(EAP_USERNAME));
+  esp_wifi_sta_wpa2_ent_set_password((uint8_t *)EAP_PASSWORD, strlen(EAP_PASSWORD));
+  esp_wpa2_config_t config = WPA2_CONFIG_INIT_DEFAULT();
+  esp_wifi_sta_wpa2_ent_enable(&config);
+  // WPA2 enterprise magic ends here
+  WiFi.begin(ssid);
+    
   while(WiFi.status() != WL_CONNECTED)
   {
     delay(100);
@@ -104,6 +127,9 @@ void setup() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+  //wifi is setup
+
+  //setup http server
   server.begin();
   
   //setting up all listing ports
@@ -116,7 +142,9 @@ void setup() {
   server.on("/event/quarantine", event_quarantine);
   server.on("/event/game_over", event_game_over);
   server.on("/event/game_won", event_game_won);
-  
+
+
+  //register to server
   host = "http://pacman.autonomic-networks.ele.tue.nl/register";
   Serial.print("connecting to ");
   Serial.println(host);  
@@ -145,7 +173,7 @@ void loop() {
   
 
   server.handleClient();
-  delay(100);
+  delay(50);
   
   
 }
