@@ -45,6 +45,13 @@ void RoleGhost()
     display.display();
 }
 
+void ShowWinner() 
+{
+    display.clear();
+    display.drawXbm(0, 0, 128, 64, Winner);
+    display.display();
+}
+
 void DisplayLives()
 {
     switch(lives)
@@ -74,5 +81,5 @@ void DisplayLives()
 
 void loop() 
 {
-  
+  ShowWinner();
 }
