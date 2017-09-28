@@ -3,7 +3,7 @@
 #define imageWidth 128
 #define imageHeight 64
 
-
+//faka strijders
 const char* ssid = "Huawei AP";
 const char* password = "teamtitanic";
 
