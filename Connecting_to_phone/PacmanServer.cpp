@@ -22,9 +22,7 @@ lives(3)
 		httpCode = http.POST(message);
 	} while (httpCode != HTTP_CODE_OK);
 
-	
-	const size_t bufferSize = JSON_ARRAY_SIZE(4) + JSON_ARRAY_SIZE(62) + 66*JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(3) + 1180;
-	DynamicJsonBuffer jsonBuffer(bufferSize);
+	DynamicJsonBuffer jsonBuffer;
 	String registrationResponse = http.getString();
 	http.end();
 
