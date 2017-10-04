@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="1600px" height="540px" style="background: #000000">
+	<!-- Walls of the building -->
+	<rect x="0" y="0" width="1600" height="8" fill="#0000FF" />
+	<rect x="0" y="0" width="8" height="540" fill="#0000FF" />
+	<rect x="0" y="532" width="1600" height="8" fill="#0000FF" />
+	<rect x="1592" y="0" width="8" height="540" fill="#0000FF" />
+	<!-- Top room walls -->
+	<rect x="0" y="125" width="1600" height="1" fill="#0000FF" />
+	<!-- Bottom room walls -->
+	<rect x="0" y="415" width="1600" height="1" fill="#0000FF" />
+
+	<!-- Right square walls -->
+	<rect x="1285" y="170" width="67" height="3" fill="#0000FF" />
+	<rect x="1372" y="170" width="82" height="3" fill="#0000FF" />
+
+	<rect x="1285" y="170" width="11" height="199" fill="#0000FF" />
+
+	<rect x="1285" y="366" width="67" height="3" fill="#0000FF" />
+	<rect x="1372" y="366" width="82" height="3" fill="#0000FF" />
+
+	<rect x="1454" y="170" width="19" height="199" fill="#0000FF" />
+
+	<!-- Right glass walls -->
+	<rect x="1473" y="170" width="81" height="1" fill="#0000FF" />
+	<rect x="1554" y="170" width="1" height="199" fill="#0000FF" />
+	<rect x="1473" y="368" width="81" height="1" fill="#0000FF" />
+
+	<!-- Elevator parts-->
+	<rect x="974" y="197" width="69" height="157" fill="#0000FF" />
+	<rect x="1114" y="197" width="145" height="63" fill="#0000FF" />
+	<rect x="1114" y="290" width="145" height="64" fill="#0000FF" />
+
+	<!-- Center glass walls -->
+	<rect x="610" y="199" width="328" height="1" fill="#0000FF" />
+	<rect x="937" y="199" width="1" height="141" fill="#0000FF" />
+	<rect x="610" y="340" width="328" height="1" fill="#0000FF" />
+	<rect x="610" y="199" width="1" height="141" fill="#0000FF" />
+
+
+	<!-- FOOD -->
+	<rect x="1500" y="150" width="15" height="15" fill="#FF69b4" />
+	<rect x="1450" y="150" width="10" height="10" fill="#FFFFFF" />
+	<rect x="1400" y="150" width="10" height="10" fill="#FFFFFF" />
+	<rect x="1350" y="150" width="10" height="10" fill="#FFFFFF" />
+
+	<rect x="1075" y="200" width="10" height="10" fill="#FFFFFF" />
+	<rect x="1075" y="250" width="10" height="10" fill="#FFFFFF" />
+	<rect x="1075" y="300" width="10" height="10" fill="#FFFFFF" />
+	<rect x="1075" y="350" width="10" height="10" fill="#FFFFFF" />
+
+	<rect x="1500" y="385" width="10" height="10" fill="#FFFFFF" />
+	<rect x="1450" y="385" width="10" height="10" fill="#FFFFFF" />
+	<rect x="1400" y="385" width="10" height="10" fill="#FFFFFF" />
+	<rect x="1350" y="385" width="10" height="10" fill="#FFFFFF" />
+</svg>
