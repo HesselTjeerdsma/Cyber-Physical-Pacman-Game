@@ -91,6 +91,16 @@ int PacmanServer::getLives()
 	return lives;
 }
 
+Direction	PacmanServer::getDirection()
+{
+	http.addHeader("Content-Type", "application/json");
+	http.POST("{\"direction\":True}");
+	StaticJsonBuffer<JSON_OBJECT_SIZE(1)> jsonBuffer;
+	JsonObject& root = jsonBuffer.parseObject(http.getString());
+	direction =Direction((int)root["direction"]);
+	return direction;
+}
+
 bool PacmanServer::inQuarantaine()
 {
 	if (millis() > quarantaine)

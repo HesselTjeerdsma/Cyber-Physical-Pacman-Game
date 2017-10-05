@@ -14,6 +14,25 @@ typedef enum {
 	GHOST
 } Role;
 
+typedef enum {
+	N,
+	NNE,
+	NE,
+	EEN,
+	E,
+	EES,
+	SE,
+	SSE,
+	S,
+	SSW,
+	SW,
+	WWS,
+	W,
+	WWN,
+	WN,
+	NNW,
+} Direction;
+
 class PacmanServer
 {
 public:
@@ -26,6 +45,7 @@ public:
 	Role getRole();
 	int getScore();
 	int getLives();
+	Direction getDirection();
 	bool inQuarantaine();
 	Status getGameStatus();
 
@@ -53,6 +73,7 @@ private:
 	long posY;
 	int score;
 	int lives;
+	Direction direction;
 	unsigned long quarantaine;
 	Status gameStatus;
 	Role character;
