@@ -2,6 +2,7 @@
 #include <HTTPClient.h>
 #include <ESP32WebServer.h>
 #include <Arduino.h>
+#include <ArduinoJson.h>
 
 typedef enum{
 	PLAYING,
