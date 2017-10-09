@@ -30,7 +30,7 @@ PacmanScreen::~PacmanScreen()
 
 
 
-void PacmanScreen::update(int lives, bool quarantaine, int score, Status gamestatus)
+void PacmanScreen::update(int lives, bool quarantaine, int score, bool energized, Status gamestatus)
 {
 	if (millis() < start_timer + 2000)
 	{
@@ -45,7 +45,7 @@ void PacmanScreen::update(int lives, bool quarantaine, int score, Status gamesta
 		
 		if (gamestatus == PLAYING)
 		{
-			inGame(lives, quarantaine,score);
+			inGame(lives, quarantaine, score, energized);
 		}
 		else
 		{
@@ -55,7 +55,7 @@ void PacmanScreen::update(int lives, bool quarantaine, int score, Status gamesta
 	}
 }
 
-void PacmanScreen::inGame(int lives, bool quarantaine, int score)
+void PacmanScreen::inGame(int lives, bool quarantaine, int score, bool energized)
 {
 	display.clear();
 	if (character == PACMAN)
@@ -66,6 +66,10 @@ void PacmanScreen::inGame(int lives, bool quarantaine, int score)
 	{
 		display.drawXbm(0, 0, 128, 64, Ghost_Small);
 	}
+  if (energized == true)
+  {
+    display.drawXbm(0, 0, 128, 64, Energizer);
+  }
 	display.setTextAlignment(TEXT_ALIGN_CENTER);
 	display.drawString(64, 25, String(score));
 	display.display();

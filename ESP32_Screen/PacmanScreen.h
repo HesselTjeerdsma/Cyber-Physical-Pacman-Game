@@ -17,12 +17,12 @@ public:
 	PacmanScreen(uint8_t screenAdress, int sda, int scl, Role role, int *ledpins);
 	~PacmanScreen();
 
-	void update(int lives, bool inQuarantaine, int score, Status gamestatus);
+	void update(int lives, bool inQuarantaine, int score, bool energized, Status gamestatus);
 
 private:
 	void drawRole();
 	void beginScreen();
-	void inGame(int lives, bool inQuarantaine, int score);
+	void inGame(int lives, bool inQuarantaine, int score, bool energized);
 	void endGame(Status gamestatus);
 
 	SSD1306 display;

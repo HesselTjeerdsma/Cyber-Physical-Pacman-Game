@@ -7,8 +7,7 @@ SSD1306  display(0x3c, 21, 22);
 int k = 1;
 int score = 0;
 int lives = 3;
-
-String role;;
+String role = "pacman";
 bool quarantine;
 
 int LED1 = 2;
