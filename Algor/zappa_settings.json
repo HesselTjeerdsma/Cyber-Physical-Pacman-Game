@@ -6,5 +6,6 @@
         "project_name": "algor", 
         "runtime": "python2.7", 
         "s3_bucket": "zappa-multipacman"
+	"slim_handler": true, 
     }
 }

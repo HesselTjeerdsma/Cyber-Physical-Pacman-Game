@@ -2,6 +2,7 @@
 # Author: Jonathan Ridderstap
 # A* Pathfinding in Python (3.6)
 # Please give credit if used
+#https://vrcfpa5qvi.execute-api.eu-west-2.amazonaws.com/dev
 from flask import Flask, jsonify, abort, request, make_response, url_for
 import time
 import numpy
@@ -123,7 +124,7 @@ for i in range(1,len(bullshit)):
     nmap[bullshit[i][0]][bullshit[i][1]]=3
 
 
-@app.route('/matrix', methods=['GET'])
+@app.route('/ex_time', methods=['GET'])
 def matrix_print():
 	start = time.time()
 	bullshit= astar(nmap, (1, 1), (24,123))
@@ -133,26 +134,16 @@ def matrix_print():
 	end = time.time()
 	
 	return jsonify(end - start)
-instructions= [
-    {
-        'direction': 'XX',
-    },
-]
-
-@app.route('/direction', methods=['GET'])
-def get_tasks():
-    return jsonify({'direction': instructions})
-
 
 @app.route('/new_direction', methods = ['POST'])
-def find_directions():
-
+def post_handler():
         if not request.json:
-                abort(400)
+                return 'no json'
         else:
-                return jsonify({'direction':instructions})
-                app.logger.debug("JSON received...")
-                app.logger.debug(request.json)
+		settings = request.get_json()
+		#return 'json received'
+		return jsonify(settings['food_locations'], settings['type'],settings['energizer_locations'])
+				
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True)
