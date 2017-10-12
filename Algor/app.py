@@ -132,17 +132,43 @@ def matrix_print():
     		nmap[bullshit[i][0]][bullshit[i][1]]=3
 	Return jsonify(map(str, np.matrix(nmap)))
 	end = time.time()
-	
+
 	#return jsonify(end - start)
 
 @app.route('/new_direction', methods = ['POST'])
-def post_handler():
+def setup_handler():
         if not request.json:
-                return 'no json'
+            return 'no json'
         else:
-		settings = request.get_json()
-		#return 'json received'
-		return jsonify(settings['food_locations'], settings['type'],settings['energizer_locations'])
+            settings = request.get_json()  
+            #return 'json received'
+            setup['food_locations'] = foodLocations 
+            settings['type'] = gameType
+            settings['energizer_locations'] = energizerLocations
+
+
+@app.route('/cherry_spawned', methods = ['POST'])
+def Cherry_handler():
+        if not request.json:
+            return 'no json'
+        else:
+            cherry = request.get_json()
+            cherry['lifetime'] = lifetimeCherry
+            cherry['location']['x'] = locationCherryX
+            cherry['location']['y'] = locationCherryY
+
+@app.route('/location', methods = ['POST'])
+def otherLocation_handler():
+        if not request.json
+            return 'no json'
+        else:   
+            otherLocation = request.get_json()
+            otherLocation['player_locations'][]['x'] = otherLocationX
+            otherLocation['player_locations'][]['y'] = otherLocationY
+
+
+
+
 				
 
 if __name__ == '__main__':
