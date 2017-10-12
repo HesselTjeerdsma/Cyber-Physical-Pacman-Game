@@ -130,10 +130,10 @@ def matrix_print():
 	bullshit= astar(nmap, (1, 1), (24,123))
 	for i in range(1,len(bullshit)):
     		nmap[bullshit[i][0]][bullshit[i][1]]=3
-	##Return jsonify(map(str, np.matrix(nmap)))
+	Return jsonify(map(str, np.matrix(nmap)))
 	end = time.time()
 	
-	return jsonify(end - start)
+	#return jsonify(end - start)
 
 @app.route('/new_direction', methods = ['POST'])
 def post_handler():
