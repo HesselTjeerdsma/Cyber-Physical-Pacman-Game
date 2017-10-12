@@ -11,6 +11,28 @@ import pylab
 numpy.set_printoptions(threshold=numpy.nan)
 
 
+
+def do_kdtree(combined_x_y_arrays,points):
+    mytree = scipy.spatial.cKDTree(combined_x_y_arrays)
+    dist, indexes = mytree.query(points)
+    return indexes
+
+def direction(coordinate):
+    if coordinate[0] == -1:
+        direction2 = 'W'
+    elif coordinate[0] == 1:
+        direction2 = 'E'
+    else: direction2 = ''
+
+    if coordinate[0] == -1:
+        direction1 = 'N'
+    elif coordinate[0] == 1:
+        direction1 = 'S'
+    else: direction1 = ''
+    return direction2+direction1
+
+
+
 def heuristic(a, b):
     return (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2
 
@@ -98,6 +120,18 @@ nmap = numpy.array([
 [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 ])
 
+def game(Own_state, Own_Position, Others_positions,Cherry_position,Food_position,energizer_position,nmap):
+    player = Own_state
+    Area = np.ones((9, 9))
+    if player == 'pacman': # if player is pacman
+        for i in range(1, 9):
+            for j in range(1, 9):
+                nmap[Others_positions[0]-4+i][Others_positions[1]-4+j] = 1
+        path = astar(nmap,Own_Position,Cherry_position(do_kdtree(Cherry_position,Own_Position)))
+        ESP32_coordinates=direction(Own_Position-path[-1])
+    else:
+        path = astar(nmap, Own_Position, Cherry_position(do_kdtree(Cherry_position, Own_Position)))
+        ESP32_coordinates = direction(Own_Position - path[-1])
 '''
 ghost = np.ones((5, 5))
 position_ghost=numpy.array([10,10])
