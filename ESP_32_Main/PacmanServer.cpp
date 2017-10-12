@@ -15,6 +15,7 @@ lives(3)
 {
 	int httpCode = 0;
 	//register to server
+  Serial.println("registration started");
 	do
 	{
 		http.begin(registerUrl);
@@ -25,7 +26,7 @@ lives(3)
 	DynamicJsonBuffer jsonBuffer;
 	String registrationResponse = http.getString();
 	http.end();
-
+  Serial.println("registration succes");
 	//set local variables
 	JsonObject& root = jsonBuffer.parseObject(registrationResponse);
 	if (root["type"] == "pacman")
@@ -42,7 +43,7 @@ lives(3)
 	http.setReuse(true);
 	http.addHeader("Content-Type", "application/json");
 	http.POST(registrationResponse);
-
+  Serial.println("algor connection is ok");
 	//setting up server on device
 	server.begin();
 	server.on("/event/location", std::bind(&PacmanServer::event_location, this));
