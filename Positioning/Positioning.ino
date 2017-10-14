@@ -24,7 +24,7 @@ void loop() {
      case 0x0:
        int32_t* location;
        location =  pozyx.getLocation();
-       Serial.write((uint8_t*)location, 12);
+       Serial.write((uint8_t*)location, 8);
        pozyx.doPositioning();
      break;
      case 0x1:
