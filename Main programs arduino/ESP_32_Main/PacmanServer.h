@@ -3,36 +3,9 @@
 #include <ESP32WebServer.h>
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include "Pacman_definitions.h"
 
-typedef enum{
-	PLAYING,
-	LOST,
-	WON
-}Status;
 
-typedef enum {
-	PACMAN,
-	GHOST
-} Role;
-
-typedef enum {
-	N,
-	NNE,
-	NE,
-	EEN,
-	E,
-	EES,
-	SE,
-	SSE,
-	S,
-	SSW,
-	SW,
-	WWS,
-	W,
-	WWN,
-	WN,
-	NNW,
-} Direction;
 
 class PacmanServer
 {
@@ -42,15 +15,17 @@ public:
 
 	void begin();
 
-	//void begin(String registerUrl, int serverPort);
 	void handleEvents();
-	void setLocation(int x, int y);
+	bool needUpdatedLocation();
+	void setLocation(int32_t x, int32_t y);
 	Role getRole();
-	int getScore();
+	long getScore();
 	int getLives();
 	Direction getDirection();
 	bool inQuarantaine();
+	bool isEnergized();
 	Status getGameStatus();
+	void endGame();
 
 
 private:
@@ -74,10 +49,13 @@ private:
 	//game variables
 	long posX;
 	long posY;
-	int score;
+	bool needUpdate;
+	long score;
 	int lives;
 	Direction direction;
 	unsigned long quarantaine;
+	unsigned long ended;
+	unsigned long energizer;
 	Status gameStatus;
 	Role character;
 	const String algo_url;

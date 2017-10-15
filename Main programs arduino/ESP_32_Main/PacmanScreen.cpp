@@ -5,9 +5,8 @@
 #include "PacmanScreen.h"
 #include "images.h"
 
-PacmanScreen::PacmanScreen(uint8_t screenAdress, int sda, int scl, Role role, int *ledpins)
-	:display(screenAdress, sda, scl),
-	character(role),
+PacmanScreen::PacmanScreen(int *ledpins)
+	:display(SCREENADRESS, SCREENPIN_SDA, SCREENPIN_SCL),
 	leds(ledpins),
 	quarantaine_timer(0),
 	quarantaine_leds(true),
@@ -28,15 +27,18 @@ PacmanScreen::~PacmanScreen()
 
 }
 
-
+void PacmanScreen::setRole(Role role)
+{
+	character = role;
+}
 
 void PacmanScreen::update(int lives, bool quarantaine, int score, bool energized, Status gamestatus)
 {
-	if (millis() < start_timer + 2000)
+	if (millis() < start_timer + STARTSCREEN)
 	{
 		return;
 	}
-	else if (millis() < start_timer + 6000)
+	else if (millis() < start_timer + STARTSCREEN + ROLESCREEN)
 	{
 		drawRole();
 	}
@@ -73,9 +75,9 @@ void PacmanScreen::inGame(int lives, bool quarantaine, int score, bool energized
 	display.setTextAlignment(TEXT_ALIGN_CENTER);
 	display.drawString(64, 25, String(score));
 	display.display();
-	if (quarantaine == true && millis() > quarantaine_timer + 500)
+	if (quarantaine == true && millis() > quarantaine_timer)
 	{
-		quarantaine_timer = millis();
+		quarantaine_timer = millis() + LED_BLINK;
 		quarantaine_leds = !quarantaine_leds;
 	}
 

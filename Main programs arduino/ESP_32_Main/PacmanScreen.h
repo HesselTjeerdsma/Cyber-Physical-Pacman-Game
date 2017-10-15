@@ -1,22 +1,15 @@
 #pragma once
 #include <Arduino.h>
-typedef enum {
-	PACMAN,
-	GHOST
-} Role;
-
-typedef enum {
-	PLAYING,
-	LOST,
-	WON
-}Status;
+#include "SSD1306.h"
+#include "Pacman_definitions.h"
 
 class PacmanScreen
 {
 public:
-	PacmanScreen(uint8_t screenAdress, int sda, int scl, Role role, int *ledpins);
+	PacmanScreen(int *ledpins);
 	~PacmanScreen();
 
+	void setRole(Role role);
 	void update(int lives, bool inQuarantaine, int score, bool energized, Status gamestatus);
 
 private:
@@ -26,9 +19,9 @@ private:
 	void endGame(Status gamestatus);
 
 	SSD1306 display;
-	int *leds;
+	const int *leds;
 	bool quarantaine_leds;
 	Role character;
 	long quarantaine_timer;
-	long start_timer;
+	const long start_timer;
 };

@@ -2,14 +2,14 @@
 #include <ESP32WebServer.h>
 #include <Arduino.h>
 #include <ArduinoJson.h>
-
-
 #include "PacmanServer.h"
 
 PacmanServer::PacmanServer(String registerUrl, String algorithmUrl, String player_name, int serverPort)
 :server(serverPort),
 gameStatus(PLAYING),
 quarantaine(0),
+ended(0),
+needUpdate(true),
 score(0),
 lives(3),
 reg_url(registerUrl),
@@ -75,10 +75,16 @@ void PacmanServer::handleEvents()
 	server.handleClient();
 }
 
-void PacmanServer::setLocation(int x_pixel, int y_pixel)
+bool PacmanServer::needUpdatedLocation()
+{
+	return needUpdate;
+}
+
+void PacmanServer::setLocation(int32_t x_pixel, int32_t y_pixel)
 {
 	posX= 5* x_pixel;
 	posY= 5* y_pixel;
+	needUpdate = false;
 }
 
 Role PacmanServer::getRole()
@@ -86,7 +92,7 @@ Role PacmanServer::getRole()
 	return character;
 }
 
-int PacmanServer::getScore()
+long PacmanServer::getScore()
 {
 	return score;
 }
@@ -118,8 +124,24 @@ bool PacmanServer::inQuarantaine()
 	}
 }
 
+bool PacmanServer::isEnergized()
+{
+	if (millis() > energizer)
+	{
+		return false;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 Status	PacmanServer::getGameStatus()
 {
+	if ((gameStatus == WON || gameStatus == LOST) && (millis() > ended))
+	{
+		abort();
+	}
 	return gameStatus;
 }
 
@@ -130,6 +152,7 @@ void PacmanServer::event_location()
 	http.addHeader("Content-Type", "application/json");
 	http.POST(server.arg(0));
 	server.send(200, "application/json; charset=utf-8", "{\"x\":" + String(posX) + ",\"y\":"+String(posY)+"}");
+	needUpdate = true;
 }
 
 void PacmanServer::event_location_error()
@@ -137,6 +160,7 @@ void PacmanServer::event_location_error()
 	http.addHeader("Content-Type", "application/json");
 	http.POST(server.arg(0));
 	server.send(200, "application/json; charset=utf-8", "");
+	needUpdate = true;
 }
 
 void PacmanServer::event_food() 
@@ -180,7 +204,7 @@ void PacmanServer::event_quarantine()
 	http.addHeader("Content-Type", "application/json");
 	http.POST(server.arg(0));
 	server.send(200, "application/json; charset=utf-8", "");
-	quarantaine = millis() + 10000;
+	quarantaine = millis() + QUARANTAINE;
 }
 
 void PacmanServer::event_game_over()
@@ -189,6 +213,7 @@ void PacmanServer::event_game_over()
 	JsonObject& root = jsonBuffer.parseObject(server.arg(0));
 	lives = root["lives"];
 	score = root["score"];
+	ended = millis() + ENDSCREEN;
 	server.send(200, "application/json; charset=utf-8", "");
 	gameStatus = LOST;
 }
@@ -199,6 +224,7 @@ void PacmanServer::event_game_won()
 	JsonObject& root = jsonBuffer.parseObject(server.arg(0));
 	lives = root["lives"];
 	score = root["score"];
+	ended = millis() + ENDSCREEN;
 	server.send(200, "application/json; charset=utf-8", "");
 	gameStatus = WON;
 }
