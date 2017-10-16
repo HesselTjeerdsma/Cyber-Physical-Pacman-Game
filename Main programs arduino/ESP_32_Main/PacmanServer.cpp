@@ -166,23 +166,45 @@ void PacmanServer::event_location_error()
 void PacmanServer::event_food() 
 {
 	http.addHeader("Content-Type", "application/json");
-	http.POST(server.arg(0));
+	String message = server.arg(0);
+	http.POST(message);
 	server.send(200, "application/json; charset=utf-8", "");
+	StaticJsonBuffer<JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(2)> jsonBuffer;
+	JsonObject& root = jsonBuffer.parseObject(message);
+	if (root["who"] == name)
+	{
+		score = root["score"];
+	}
 
 }
 
 void PacmanServer::event_cherry()
 {
 	http.addHeader("Content-Type", "application/json");
-	http.POST(server.arg(0));
+	String message = server.arg(0);
+	http.POST(message);
 	server.send(200, "application/json; charset=utf-8", "");
+	StaticJsonBuffer<JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(2)> jsonBuffer;
+	JsonObject& root = jsonBuffer.parseObject(message);
+	if (root["who"] == name)
+	{
+		score = root["score"];
+	}
 }
 
 void PacmanServer::event_energizer()
 {
 	http.addHeader("Content-Type", "application/json");
-	http.POST(server.arg(0));
+	String message = server.arg(0);
+	http.POST(message);
 	server.send(200, "application/json; charset=utf-8", "");
+	StaticJsonBuffer<JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(2)> jsonBuffer;
+	JsonObject& root = jsonBuffer.parseObject(message);
+	if (root["who"] == name)
+	{
+		score = root["score"];
+		energizer = millis() + ENERGIZER;
+	}
 }
 
 void PacmanServer::event_cherry_spawned()
