@@ -5,31 +5,39 @@
 #include "PacmanScreen.h"
 #include "images.h"
 
-PacmanScreen::PacmanScreen()
+PacmanScreen::PacmanScreen(int)
 	:display(SCREENADRESS, SCREENPIN_SDA, SCREENPIN_SCL),
 	quarantaine_timer(0),
 	quarantaine_leds(true),
 	start_timer(millis())
 {
-
+	Serial.begin(115200);
+	Serial.println("running screen");
+	
+	pinMode(SCREENPIN_SDA, OUTPUT);
+	pinMode(SCREENPIN_SCL, OUTPUT);
+	Serial.println("setting up screen");
+	display->init();
+	
+	display.flipScreenVertically();
+	display.setFont(ArialMT_Plain_24);
+	Serial.println("building begin screen");
+	display.clear();
+	display.drawXbm(0, 0, 128, 64, Startup);
+	display.display();
+	
+	Serial.println("screen builded");
+	
 	pinMode(PIN_LED1, OUTPUT);
 	pinMode(PIN_LED2, OUTPUT);
 	pinMode(PIN_LED3, OUTPUT);
+	
+	Serial.println("pin setted");
 }
 
 PacmanScreen::~PacmanScreen()
 {
 
-}
-
-void PacmanScreen::begin()
-{
-	display.init();
-	display.flipScreenVertically();
-	display.setFont(ArialMT_Plain_24);
-	display.clear();
-	display.drawXbm(0, 0, 128, 64, Startup);
-	display.display();
 }
 
 void PacmanScreen::setRole(Role role)
@@ -94,24 +102,24 @@ void PacmanScreen::inGame(int lives, bool quarantaine, int score, bool energized
 	switch (lives)
 	{
 	case 3:
-		digitalWrite(PIN_LED1, HIGH);
-		digitalWrite(PIN_LED2, HIGH);
-		digitalWrite(PIN_LED3, HIGH);
+		digitalWrite(leds[0], HIGH);
+		digitalWrite(leds[1], HIGH);
+		digitalWrite(leds[2], HIGH);
 		break;
 	case 2:
-		digitalWrite(PIN_LED1, HIGH);
-		digitalWrite(PIN_LED2, HIGH);
-		digitalWrite(PIN_LED3, LOW);
+		digitalWrite(leds[0], HIGH);
+		digitalWrite(leds[1], HIGH);
+		digitalWrite(leds[2], LOW);
 		break;
 	case 1:
-		digitalWrite(PIN_LED1, HIGH);
-		digitalWrite(PIN_LED2, LOW);
-		digitalWrite(PIN_LED3, LOW);
+		digitalWrite(leds[0], HIGH);
+		digitalWrite(leds[1], LOW);
+		digitalWrite(leds[2], LOW);
 		break;
 	case 0:
-		digitalWrite(PIN_LED1, LOW);
-		digitalWrite(PIN_LED2, LOW);
-		digitalWrite(PIN_LED3, LOW);
+		digitalWrite(leds[0], LOW);
+		digitalWrite(leds[1], LOW);
+		digitalWrite(leds[2], LOW);
 		break;
 	}
 }

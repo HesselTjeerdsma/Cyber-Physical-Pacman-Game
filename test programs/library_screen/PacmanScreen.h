@@ -6,10 +6,8 @@
 class PacmanScreen
 {
 public:
-	PacmanScreen();
+	PacmanScreen(int i);
 	~PacmanScreen();
-
-	void begin();
 
 	void setRole(Role role);
 	void update(int lives, bool inQuarantaine, int score, bool energized, Status gamestatus);
@@ -20,6 +18,7 @@ private:
 	void endGame(Status gamestatus);
 
 	SSD1306 display;
+	const int *leds;
 	bool quarantaine_leds;
 	Role character;
 	long quarantaine_timer;

@@ -1,11 +1,7 @@
 #include <WiFi.h>
 #include "esp_wpa2.h"
-
-#include "Pacman_definitions.h"
-
 #include "PacmanServer.h"
 #include "PacmanScreen.h"
-#include "PacmanOled.h"
 
 
 const char* ssid = "tue-wpa2"; // your ssid
@@ -13,30 +9,11 @@ const char* ssid = "tue-wpa2"; // your ssid
 #define EAP_USERNAME "s161743"
 #define EAP_PASSWORD "cYxD35$1"
 
-
-HardwareSerial Serial1(2);
-
-
-
 PacmanServer server("http://pacman.autonomic-networks.ele.tue.nl/register", "https://vrcfpa5qvi.execute-api.eu-west-2.amazonaws.com/dev", "titanic", 50001);
 PacmanScreen screen;  
 
-int32_t xpos;
-int32_t ypos;
-
-float yaw;
-
-long score;
-int lives;
-
-Status gameStatus;
-
-bool energized;
-bool quarantaine;
-
 void setup() {
     Serial.begin(115200);
-    Serial1.begin(115200);
     delay(10);
 
     Serial.println();
@@ -64,56 +41,15 @@ void setup() {
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
-    
-    //screen setup
-    screen.begin();
+
     server.begin();
-    gameStatus = server.getGameStatus();
     screen.setRole(server.getRole());
-    
 }
 
 
 void loop ()
 {
-
-  if(gameStatus == PLAYING)
-  {
-    //get yaw and set yaw
-    Serial1.write(0x1);
-    while(Serial1.available() == false);
-    Serial1.readBytes((uint8_t*)&yaw,4);
   
-    //get new location
-    if(server.needUpdatedLocation() == true)
-    {
-      Serial1.write(0x0);
-      while(Serial1.available() == false);
-      Serial1.readBytes((uint8_t*)&xpos,4);
-      Serial1.readBytes((uint8_t*)&ypos,4);
-      server.setLocation(xpos,ypos);
-    }
-    //update server events
-    
-    //set variables got by the server
-    score = server.getScore();
-    lives = server.getLives();
-    quarantaine = server.inQuarantaine();
-    energized = server.isEnergized();
-    
-    
-  }
-
-  
-  
-    server.handleEvents();
-    gameStatus = server.getGameStatus();
-
-    screen.update(lives,quarantaine,score,energized,gameStatus);
-
-
-    
 }
-
 
 
