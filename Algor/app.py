@@ -179,12 +179,18 @@ def setup_handler():
         if not request.json:
             return 'no json'
         else:
-            settings = request.get_json()  
-            #return 'json received'
-            allPositions.append(np.asanyarray(settings['food_locations']) ) 
+            settings = request.get_json() 
+            amountFood = len(settings['food_locations'])
+            for i in xrange(0, amountFood):
+                amountFoodArray = [settings['food_locations'][i]['x'], settings['food_locations'][i]['y']]   
+                allPositions.append(amountFoodArray)
+            
+            amountEnergizer = len(settings['energizer_locations'])
+            for x in xrange(0, amountEnergizer):
+                amountEnergizerArray = [settings['energizer_locations'][x]['x'], settings['energizer_locations'][x]['y']]
+                allPositions.append(amountEnergizerArray)
+                    
             Own_state = settings['type']
-            allPositions.append(np.asanyarray(settings['energizer_locations']) )
-            #return 'received, everything ok'
             return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
 
 
