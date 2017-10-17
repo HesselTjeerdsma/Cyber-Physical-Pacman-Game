@@ -18,7 +18,7 @@ HardwareSerial Serial1(2);
 
 
 
-PacmanServer server("http://pacman.autonomic-networks.ele.tue.nl/register", "https://vrcfpa5qvi.execute-api.eu-west-2.amazonaws.com/dev", "titanic", 50001);
+PacmanServer server("http://pacman.autonomic-networks.ele.tue.nl/register", "https://vrcfpa5qvi.execute-api.eu-west-2.amazonaws.com/dev/", "titanic", 50001);
 PacmanScreen screen;  
 
 int32_t xpos;

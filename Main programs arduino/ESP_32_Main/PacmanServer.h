@@ -31,7 +31,18 @@ public:
 private:
 	
 	//classes needed for internet communication
-	HTTPClient http;
+	HTTPClient http_register;
+	HTTPClient http_location;
+	HTTPClient http_location_error;
+	HTTPClient http_food;
+	HTTPClient http_cherry;
+	HTTPClient http_energizer;
+	HTTPClient http_cherry_spawned;
+	HTTPClient http_collision;
+	HTTPClient http_quarantine;
+	HTTPClient http_game_over;
+	HTTPClient http_game_won;
+	HTTPClient http_direction;
 	ESP32WebServer server;
 
 	//server side request handler

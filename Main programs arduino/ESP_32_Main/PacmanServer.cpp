@@ -33,7 +33,18 @@ name(player_name)
 
 PacmanServer::~PacmanServer()
 {
-	http.end();
+	http_register.end();
+	http_location.end();
+	http_location_error.end();
+	http_food.end();
+	http_cherry.end();
+	http_energizer.end();
+	http_cherry_spawned.end();
+	http_collision.end();
+	http_quarantine.end();
+	http_game_over.end();
+	http_game_won.end();
+	http_direction.end();
 	server.close();
 }
 
@@ -44,14 +55,14 @@ void PacmanServer::begin()
 	Serial.println("registration started");
 	do
 	{
-		http.begin(reg_url);
+		http_register.begin(reg_url);
 		String message = "{ \"name\": \"" + name + "\" }";
-		httpCode = http.POST(message);
+		httpCode = http_register.POST(message);
 	} while (httpCode != HTTP_CODE_OK);
 
 	DynamicJsonBuffer jsonBuffer;
-	String registrationResponse = http.getString();
-	http.end();
+	String registrationResponse = http_register.getString();
+	http_register.end();
 	//set local variables
 	JsonObject& root = jsonBuffer.parseObject(registrationResponse);
 	if (root["type"] == "pacman")
@@ -64,10 +75,57 @@ void PacmanServer::begin()
 	}
 
 	//start connection with algorithmserver
-	http.begin(algo_url);
-	http.setReuse(true);
-	http.addHeader("Content-Type", "application/json");
-	http.POST(registrationResponse);
+	http_register.begin(algo_url + "event/register");
+	http_register.setReuse(true);
+	http_register.addHeader("Content-Type", "application/json");
+	
+	http_location.begin(algo_url + "event/location");
+	http_location.setReuse(true);
+	http_location.addHeader("Content-Type", "application/json");
+
+	http_location_error.begin(algo_url + "event/location_error");
+	http_location_error.setReuse(true);
+	http_location_error.addHeader("Content-Type", "application/json");
+
+	http_food.begin(algo_url + "event/food");
+	http_food.setReuse(true);
+	http_food.addHeader("Content-Type", "application/json");
+
+	http_cherry.begin(algo_url + "event/cherry");
+	http_cherry.setReuse(true);
+	http_cherry.addHeader("Content-Type", "application/json");
+
+	http_energizer.begin(algo_url + "event/energizer");
+	http_energizer.setReuse(true);
+	http_energizer.addHeader("Content-Type", "application/json");
+
+	http_cherry_spawned.begin(algo_url + "event/cherry_spawned");
+	http_cherry_spawned.setReuse(true);
+	http_cherry_spawned.addHeader("Content-Type", "application/json");
+
+	http_collision.begin(algo_url + "event/collision");
+	http_collision.setReuse(true);
+	http_collision.addHeader("Content-Type", "application/json");
+
+	http_quarantine.begin(algo_url + "event/quarantine");
+	http_quarantine.setReuse(true);
+	http_quarantine.addHeader("Content-Type", "application/json");
+
+	http_game_over.begin(algo_url + "event/game_over");
+	http_game_over.setReuse(true);
+	http_game_over.addHeader("Content-Type", "application/json");
+
+	http_game_won.begin(algo_url + "event/game_won");
+	http_game_won.setReuse(true);
+	http_game_won.addHeader("Content-Type", "application/json");
+
+
+	http_direction.begin(algo_url + "event/direction");
+	http_direction.setReuse(true);
+	http_direction.addHeader("Content-Type", "application/json");
+
+	//give register info to algo server
+	http_register.POST(registrationResponse );
 }
 
 void PacmanServer::handleEvents()
@@ -104,10 +162,10 @@ int PacmanServer::getLives()
 
 Direction	PacmanServer::getDirection()
 {
-	http.addHeader("Content-Type", "application/json");
-	http.POST("{\"direction\":True}");
+	http_direction.addHeader("Content-Type", "application/json");
+	http_direction.POST("{\"direction\":True}");
 	StaticJsonBuffer<JSON_OBJECT_SIZE(1)> jsonBuffer;
-	JsonObject& root = jsonBuffer.parseObject(http.getString());
+	JsonObject& root = jsonBuffer.parseObject(http_direction.getString());
 	direction =Direction((int)root["direction"]);
 	return direction;
 }
@@ -149,25 +207,25 @@ Status	PacmanServer::getGameStatus()
 
 void PacmanServer::event_location()
 {
-	http.addHeader("Content-Type", "application/json");
-	http.POST(server.arg(0));
+	http_location.addHeader("Content-Type", "application/json");
+	http_location.POST(server.arg(0));
 	server.send(200, "application/json; charset=utf-8", "{\"x\":" + String(posX) + ",\"y\":"+String(posY)+"}");
 	needUpdate = true;
 }
 
 void PacmanServer::event_location_error()
 {
-	http.addHeader("Content-Type", "application/json");
-	http.POST(server.arg(0));
+	http_location_error.addHeader("Content-Type", "application/json");
+	http_location_error.POST(server.arg(0));
 	server.send(200, "application/json; charset=utf-8", "");
 	needUpdate = true;
 }
 
 void PacmanServer::event_food() 
 {
-	http.addHeader("Content-Type", "application/json");
+	http_food.addHeader("Content-Type", "application/json");
 	String message = server.arg(0);
-	http.POST(message);
+	http_food.POST(message);
 	server.send(200, "application/json; charset=utf-8", "");
 	StaticJsonBuffer<JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(2)> jsonBuffer;
 	JsonObject& root = jsonBuffer.parseObject(message);
@@ -180,9 +238,9 @@ void PacmanServer::event_food()
 
 void PacmanServer::event_cherry()
 {
-	http.addHeader("Content-Type", "application/json");
+	http_cherry.addHeader("Content-Type", "application/json");
 	String message = server.arg(0);
-	http.POST(message);
+	http_cherry.POST(message);
 	server.send(200, "application/json; charset=utf-8", "");
 	StaticJsonBuffer<JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(2)> jsonBuffer;
 	JsonObject& root = jsonBuffer.parseObject(message);
@@ -194,9 +252,9 @@ void PacmanServer::event_cherry()
 
 void PacmanServer::event_energizer()
 {
-	http.addHeader("Content-Type", "application/json");
+	http_energizer.addHeader("Content-Type", "application/json");
 	String message = server.arg(0);
-	http.POST(message);
+	http_energizer.POST(message);
 	server.send(200, "application/json; charset=utf-8", "");
 	StaticJsonBuffer<JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(2)> jsonBuffer;
 	JsonObject& root = jsonBuffer.parseObject(message);
@@ -209,22 +267,27 @@ void PacmanServer::event_energizer()
 
 void PacmanServer::event_cherry_spawned()
 {
-	http.addHeader("Content-Type", "application/json");
-	http.POST(server.arg(0));
+	http_cherry_spawned.addHeader("Content-Type", "application/json");
+	http_cherry_spawned.POST(server.arg(0));
 	server.send(200, "application/json; charset=utf-8", "");
 }
 
 void PacmanServer::event_collision()
 {
-	http.addHeader("Content-Type", "application/json");
-	http.POST(server.arg(0));
+	http_collision.addHeader("Content-Type", "application/json");
+	String message = server.arg(0);
+	http_collision.POST(message);
 	server.send(200, "application/json; charset=utf-8", "");
+	StaticJsonBuffer<JSON_OBJECT_SIZE(3)> jsonBuffer;
+	JsonObject& root = jsonBuffer.parseObject(message);
+	lives = root["lives"];
+	score = root["score"];
 }
 
 void PacmanServer::event_quarantine()
 {
-	http.addHeader("Content-Type", "application/json");
-	http.POST(server.arg(0));
+	http_quarantine.addHeader("Content-Type", "application/json");
+	http_quarantine.POST(server.arg(0));
 	server.send(200, "application/json; charset=utf-8", "");
 	quarantaine = millis() + QUARANTAINE;
 }
