@@ -14,8 +14,8 @@ numpy.set_printoptions(threshold=numpy.nan)
 app = Flask(__name__)
 allPositions = []
 Own_state = 0
-Own_Position = []
-Others_positions = np.array([15,15])
+Own_Position = np.array([1,5])
+Others_positions = np.array([24,123])
 
 @app.errorhandler(400)
 def not_found(error):
@@ -28,7 +28,7 @@ def not_found(error):
 def do_kdtree(combined_x_y_arrays,points):
     mytree = scipy.spatial.cKDTree(combined_x_y_arrays)
     dist, indexes = mytree.query(points)
-    return indexes
+    return combined_x_y_arrays[indexes]
 
 def direction(coordinate):
     if coordinate[0] == -1:
@@ -131,37 +131,36 @@ nmap = numpy.array([
 ])
 
 
-def game(Own_state, Own_Position, Others_positions,allPositions, nmap):
+def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
     player = Own_state
     Area = np.ones((9, 9))
     if player == 'pacman': # if player is pacman
-        for i in xrange(1, 9):
-            for j in xrange(1, 9):
-                nmap[Others_positions[0]-4+i][Others_positions[1]-4+j] = 1
-                #return jsonify(Others_positions[0]-4+i)
-        path = astar(nmap,Own_Position,allPositions(do_kdtree(allPositions,Own_Position)))
+        for i in xrange(0, 9):
+            for j in xrange(0, 9):
+                if Others_positions[0]-4+i > len(nmap[0]):
+                    nmap0 = 26
+                elif Others_positions[0]-4+i < 0:
+                    nmap0 = 0
+                else:
+                    nmap0 = Others_positions[0]-4+i
+                if Others_positions[1]-4+j > len(nmap):
+                    nmap1 = 26
+                elif Others_positions[1]-4+j < 0:
+                    nmap01 = 0
+                else:
+                    nmap1 = Others_positions[1]-4+j
+                nmap[nmap0][nmap1] = 1
+        
+        closeLocation = do_kdtree(allPositions,Own_Position)
+        #closeLocation[0] = int(round(((closeLocation[0]/50) - 24),0))
+        #closeLocation[1] = int(round(closeLocation[1]/50, 0))
+        path = astar(nmap,(Own_Position[0],Own_Position[1]),(closeLocation[0],closeLocation[1]))
+        return jsonify(path)
+
         return direction(Own_Position-path[-1])
-                #return jsonify(Others_positions)
     else:
         path = astar(nmap, Own_Position, allPositions(do_kdtree(allPositions, Own_Position)))
-        return jsonify(direction(Own_Position - path[-1]))
-'''
-ghost = np.ones((5, 5))
-position_ghost=numpy.array([10,10])
-
-for i in range(1,len(ghost)):
-    for j in range(1,position_ghost):
-        nmap[bullshit[i][0]][bullshit[i][1]]=3
-'''
-
-bullshit= astar(nmap, (1, 1), (24,123))
-
-
-#print(bullshit)
-#print(np.matrix(nmap))
-#pylab.figure(1)
-#pylab.imshow(10*nmap, interpolation='nearest', cmap='terrain_r')
-#pylab.show()
+        return direction(Own_Position - path[-1])
 
 @app.route('/ex_time', methods=['GET'])
 def matrix_print():
@@ -191,6 +190,14 @@ def setup_handler():
                 allPositions.append(amountEnergizerArray)
                     
             Own_state = settings['type']
+            
+
+            amountPositions = len(allPositions)
+            for y in xrange(0, amountPositions):
+                allPositions[y][0] = allPositions[y][0]/50
+                allPositions[y][1] = allPositions[y][1]/50
+
+
             return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
 
 
