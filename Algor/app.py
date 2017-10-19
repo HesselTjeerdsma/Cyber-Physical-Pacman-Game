@@ -14,8 +14,9 @@ numpy.set_printoptions(threshold=numpy.nan)
 app = Flask(__name__)
 allPositions = []
 Own_state = 0
-Own_Position = np.array([1,5])
-Others_positions = np.array([24,123])
+Own_Position = np.array([5,5])
+Others_positions = np.array([0,0])
+start = 0
 
 @app.errorhandler(400)
 def not_found(error):
@@ -37,9 +38,9 @@ def direction(coordinate):
         direction2 = 'E'
     else: direction2 = ''
 
-    if coordinate[0] == -1:
+    if coordinate[1] == -1:
         direction1 = 'N'
-    elif coordinate[0] == 1:
+    elif coordinate[1] == 1:
         direction1 = 'S'
     else: direction1 = ''
     return direction2+direction1
@@ -132,49 +133,44 @@ nmap = numpy.array([
 
 
 def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
+    start = time.time()
     player = Own_state
     Area = np.ones((9, 9))
     if player == 'pacman': # if player is pacman
         for i in xrange(0, 9):
             for j in xrange(0, 9):
                 if Others_positions[0]-4+i > len(nmap[0]):
-                    nmap0 = 26
+                    nmap1 = len(nmap[0]) - 1
                 elif Others_positions[0]-4+i < 0:
+                    nmap1 = 0
+                else:
+                    nmap1 = Others_positions[0]-4+i
+                if Others_positions[1]-4+j > len(nmap):
+                    nmap0 = len(nmap) - 1
+                elif Others_positions[1]-4+j < 0:
                     nmap0 = 0
                 else:
-                    nmap0 = Others_positions[0]-4+i
-                if Others_positions[1]-4+j > len(nmap):
-                    nmap1 = 26
-                elif Others_positions[1]-4+j < 0:
-                    nmap01 = 0
-                else:
-                    nmap1 = Others_positions[1]-4+j
+                    nmap0 = Others_positions[1]-4+j
                 nmap[nmap0][nmap1] = 1
-        
+                
         closeLocation = do_kdtree(allPositions,Own_Position)
         #closeLocation[0] = int(round(((closeLocation[0]/50) - 24),0))
         #closeLocation[1] = int(round(closeLocation[1]/50, 0))
         path = astar(nmap,(Own_Position[0],Own_Position[1]),(closeLocation[0],closeLocation[1]))
-        return jsonify(path)
-
-        return direction(Own_Position-path[-1])
+        #return jsonify(direction(Own_Position-path[-1]))
     else:
         path = astar(nmap, Own_Position, allPositions(do_kdtree(allPositions, Own_Position)))
-        return direction(Own_Position - path[-1])
-
+        direction(Own_Position - path[-1])
+    end = time.time()
+    return jsonify(start, end)
 @app.route('/ex_time', methods=['GET'])
 def matrix_print():
-	start = time.time()
-	bullshit= astar(nmap, (1, 1), (24,123))
-	for i in xrange(1,len(bullshit)):
-    		nmap[bullshit[i][0]][bullshit[i][1]]=3
-	#Return jsonify(map(str, np.matrix(nmap)))
-	end = time.time()
 
-	return jsonify(end - start)
+	return jsonify(len(nmap[0]))
 
 @app.route('/register', methods = ['POST'])
 def setup_handler():
+        
         if not request.json:
             return 'no json'
         else:
@@ -193,11 +189,12 @@ def setup_handler():
             
 
             amountPositions = len(allPositions)
-            for y in xrange(0, amountPositions):
-                allPositions[y][0] = allPositions[y][0]/50
-                allPositions[y][1] = allPositions[y][1]/50
+            for j in xrange(0, amountPositions):
+                allPositions[j][0] = allPositions[j][0]/1000
+                allPositions[j][1] = ((allPositions[j][1]/1000)-11.5)
 
-
+            #return jsonify(allPositions)start 
+            
             return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
 
 
@@ -208,19 +205,17 @@ def Cherry_handler():
         else:
             cherry = request.get_json()
             cherry['lifetime'] = lifetimeCherry
-            allPositions.append( cherry['location'] )
+            allPositions.append(cherry['location'])
 
-@app.route('/location', methods = ['POST'])
-def otherLocation_handler():
+@app.route('/direction', methods = ['POST'])
+def Location_handler():
         if not request.json:
             return 'no json'
-        else:   
-            otherLocation = request.get_json()
-            otherLocation['player_locations'][:]['x'] = otherLocationX
-            otherLocation['player_locations'][:]['y'] = otherLocationY
-
+        else:  
+            if request.get_json() == true:
+                return jsonify(game(Own_state, Own_Position, Others_positions,allPositions, nmap))
 
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',debug=True)
+    app.run(host='0.0.0.0')
