@@ -59,7 +59,21 @@ void setup() {
         delay(500);
         Serial.print(".");
     }
-
+    bool pozyxArduino = false;
+    do
+    {
+      Serial1.write(0x02);
+      delay(10);
+      if(Serial1.available())
+      {
+        if(Serial.read()== 0x02 && Serial.read() == 0x02)
+        pozyxArduino = true;
+      }
+      else
+      {
+      delay(20);
+      }
+    }while(pozyxArduino == false);
     Serial.println("");
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
@@ -70,7 +84,10 @@ void setup() {
     server.begin();
     gameStatus = server.getGameStatus();
     screen.setRole(server.getRole());
-    
+    while(Serial1.available())
+    {
+      Serial1.read();     
+    }
 }
 
 

@@ -32,6 +32,10 @@ void loop() {
        orientation = pozyx.getOrientation();
        Serial.write((uint8_t*)&orientation,4);
      break;
+     case 0x2:
+      Serial.write(0x02);
+      Serial.write(0x02);
+     break;
   }
 }
 }
