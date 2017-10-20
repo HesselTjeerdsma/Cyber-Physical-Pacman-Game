@@ -5,9 +5,9 @@
 
 
 const char* ssid = "tue-wpa2"; // your ssid
-#define EAP_ID "h.a.tjeerdsma@student.tue.nl"
-#define EAP_USERNAME "s161743"
-#define EAP_PASSWORD "cYxD35$1"
+#define EAP_ID ""
+#define EAP_USERNAME ""
+#define EAP_PASSWORD ""
 
 PacmanServer server("http://pacman.autonomic-networks.ele.tue.nl/register", "https://vrcfpa5qvi.execute-api.eu-west-2.amazonaws.com/dev", "titanic", 50001);
 PacmanScreen screen;  
