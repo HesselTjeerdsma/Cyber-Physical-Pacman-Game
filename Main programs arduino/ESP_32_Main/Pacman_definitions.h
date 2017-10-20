@@ -39,10 +39,11 @@ typedef enum {
 
 #define SCREENADRESS 0x3c
 
+#define HANDLE_EVENTS_MICROSECONDS 10000 // 10 milliseconds
 
 //define miliseconds show of the screen
-#define STARTSCREEN 1000
-#define ROLESCREEN 5000
+#define STARTSCREEN 5000
+#define ROLESCREEN 15000
 #define ENDSCREEN 5000 
 
 //times of specialmodes in milliseconds
@@ -54,6 +55,7 @@ typedef enum {
 #define ENERGIZER_SPEED 50
 #define QUARANTAINE_SPEED 250
 
+#define BRIGHTNESS 3
 //define colors
 #define COLOR_QUARANTAINE1		0xFF5500 //bright orange
 #define COLOR_QUARANTAINE2		0xFF8800 //dark orange

@@ -8,9 +8,10 @@
 class PacmanPozyx
 {
 public:
-	PacmanPozyx(int nAnchors, uint16_t *anchors, int32_t *anchors_x, int32_t *anchors_y, int32_t *anchors_z, int strength_filter);
+	PacmanPozyx(int strength_filter);
 	~PacmanPozyx();
 
+	void begin(int nAnchors, uint16_t *anchors, int32_t *anchors_x, int32_t *anchors_y, int32_t *anchors_z);
 	int32_t* getLocation();
 	void doPositioning();
 	float32_t getOrientation();

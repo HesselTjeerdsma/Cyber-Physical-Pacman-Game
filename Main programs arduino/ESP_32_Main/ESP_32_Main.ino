@@ -9,9 +9,9 @@
 
 
 const char* ssid = "tue-wpa2"; // your ssid
-#define EAP_ID "h.a.tjeerdsma@student.tue.nl"
-#define EAP_USERNAME "s161743"
-#define EAP_PASSWORD "cYxD35$1"
+#define EAP_ID "d.a.w.markus@student.tue.nl"
+#define EAP_USERNAME "s169013"
+#define EAP_PASSWORD ""
 
 
 HardwareSerial Serial1(2);
@@ -19,7 +19,8 @@ HardwareSerial Serial1(2);
 
 
 PacmanServer server("http://pacman.autonomic-networks.ele.tue.nl/register", "https://vrcfpa5qvi.execute-api.eu-west-2.amazonaws.com/dev/", "titanic", 50001);
-PacmanScreen screen;  
+PacmanScreen screen;
+PacmanOled ring(16);  
 
 int32_t xpos;
 int32_t ypos;
@@ -33,6 +34,48 @@ Status gameStatus;
 
 bool energized;
 bool quarantaine;
+
+hw_timer_t *timer = NULL;
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+
+void handleEvents()
+{
+  portENTER_CRITICAL_ISR(&timerMux);
+  server.handleEvents();
+  portEXIT_CRITICAL_ISR(&timerMux);
+
+}
+
+void serialCommunication()
+{
+  
+  if(gameStatus == PLAYING)
+  {
+    //get yaw and set yaw
+    Serial1.write(0x1);
+    while(Serial1.available() == false);
+    Serial1.readBytes((uint8_t*)&yaw,4);
+    //get new location
+    if(server.needUpdatedLocation() == true)
+    {
+      Serial1.write(0x0);
+      while(Serial1.available() == false);
+      Serial1.readBytes((uint8_t*)&xpos,4);
+      Serial1.readBytes((uint8_t*)&ypos,4);
+      portENTER_CRITICAL(&timerMux);
+      server.setLocation(xpos,ypos);
+      portEXIT_CRITICAL(&timerMux);
+    }
+    //update server events
+    //set variables got by the server
+    score = server.getScore();
+    lives = server.getLives();
+    quarantaine = server.inQuarantaine();
+    energized = server.isEnergized();
+    
+    
+  }
+}
 
 void setup() {
     Serial.begin(115200);
@@ -59,74 +102,65 @@ void setup() {
         delay(500);
         Serial.print(".");
     }
+    Serial.println("");
+    Serial.println("WiFi connected");
+    Serial.println("IP address: ");
+    Serial.println(WiFi.localIP());
     bool pozyxArduino = false;
     do
     {
-      Serial1.write(0x02);
+      Serial1.write(0x2);
+      Serial.println("Trying connect Pozyx");
       delay(10);
-      if(Serial1.available())
+      if(Serial1.available()>=2)
       {
-        if(Serial.read()== 0x02 && Serial.read() == 0x02)
+        Serial.println("Serial available");
+        if(Serial1.read()== 0x2 && Serial1.read() == 0x2)
+        {
         pozyxArduino = true;
+        Serial.println("Pozyx started");
+        }
       }
       else
       {
       delay(20);
       }
     }while(pozyxArduino == false);
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
-    
-    //screen setup
-    screen.begin();
-    server.begin();
-    gameStatus = server.getGameStatus();
-    screen.setRole(server.getRole());
     while(Serial1.available())
     {
       Serial1.read();     
     }
+    Serial1.write(0x0);
+    while(Serial1.available() == false);
+    Serial1.readBytes((uint8_t*)&xpos,4);
+    Serial1.readBytes((uint8_t*)&ypos,4);
+    //screen setup
+
+    screen.begin();
+    ring.begin();
+    portENTER_CRITICAL(&timerMux);
+    server.begin();
+    server.setLocation(xpos,ypos);
+    portEXIT_CRITICAL(&timerMux);
+    gameStatus = server.getGameStatus();
+    screen.setRole(server.getRole());
+
+    timer = timerBegin(0, 80, true);
+    timerAttachInterrupt(timer, &handleEvents, true);
+    timerAlarmWrite(timer, HANDLE_EVENTS_MICROSECONDS, true);
+    timerAlarmEnable(timer);
+    Serial.println("Setup done");
 }
 
 
 void loop ()
 {
 
-  if(gameStatus == PLAYING)
-  {
-    //get yaw and set yaw
-    Serial1.write(0x1);
-    while(Serial1.available() == false);
-    Serial1.readBytes((uint8_t*)&yaw,4);
-  
-    //get new location
-    if(server.needUpdatedLocation() == true)
-    {
-      Serial1.write(0x0);
-      while(Serial1.available() == false);
-      Serial1.readBytes((uint8_t*)&xpos,4);
-      Serial1.readBytes((uint8_t*)&ypos,4);
-      server.setLocation(xpos,ypos);
-    }
-    //update server events
-    
-    //set variables got by the server
-    score = server.getScore();
-    lives = server.getLives();
-    quarantaine = server.inQuarantaine();
-    energized = server.isEnergized();
-    
-    
-  }
-
-  
-  
-    server.handleEvents();
+    serialCommunication();
     gameStatus = server.getGameStatus();
-
+    Serial.println("Screenupdate");
     screen.update(lives,quarantaine,score,energized,gameStatus);
+    ring.updateRing(N,yaw,lives,energized,quarantaine,gameStatus);
 
 
     

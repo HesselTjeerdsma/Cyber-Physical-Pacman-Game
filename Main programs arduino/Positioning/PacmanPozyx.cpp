@@ -4,24 +4,27 @@
 #include <Pozyx_definitions.h>
 #include <Wire.h>
 
-PacmanPozyx::PacmanPozyx(int nAnchors, uint16_t *anchors, int32_t *anchors_x, int32_t *anchors_y, int32_t *anchors_z, int strength_filter)
+PacmanPozyx::PacmanPozyx(int strength_filter)
 :
-	algorithm(POZYX_POS_ALG_TRACKING),
+	algorithm(POZYX_POS_ALG_UWB_ONLY),
 	dimension(POZYX_3D),
 	strength_filter(strength_filter)
-
 {
-	Pozyx.begin();
-	Pozyx.clearDevices();
-	setAnchorsManual(nAnchors, anchors, anchors_x, anchors_y, anchors_z);
-	Pozyx.setPositionFilter(POZYX_POS_FILTER_MOVING_AVERAGE, strength_filter);
-	
+
 	
 }
 
 PacmanPozyx::~PacmanPozyx()
 {
 
+}
+
+void PacmanPozyx::begin(int nAnchors, uint16_t *anchors, int32_t *anchors_x, int32_t *anchors_y, int32_t *anchors_z)
+{
+	Pozyx.begin();
+	Pozyx.clearDevices();
+	setAnchorsManual(nAnchors, anchors, anchors_x, anchors_y, anchors_z);
+	Pozyx.setPositionFilter(POZYX_POS_FILTER_MOVING_AVERAGE, strength_filter);
 }
 
 int32_t* PacmanPozyx::getLocation()

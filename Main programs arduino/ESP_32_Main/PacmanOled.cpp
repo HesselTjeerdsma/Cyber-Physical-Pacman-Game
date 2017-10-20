@@ -1,8 +1,7 @@
 #include <Arduino.h>
-
 #include "PacmanOled.h"
 
-PacmanOled::PacmanOled(int num_leds, int brightness)
+PacmanOled::PacmanOled(int num_leds)
 :
 	nLeds(num_leds),
 	energized_timer(0),
@@ -10,18 +9,24 @@ PacmanOled::PacmanOled(int num_leds, int brightness)
 	quarantaine_color(true),
 	quarantaine_timer(0)
 {
-	leds = (CRGB*)malloc(sizeof(CRGB)*nLeds);
-	FastLED.setBrightness(brightness);
-	FastLED.addLeds<WS2812B, OLEDPIN>(leds, nLeds);
-	oneColorRing(COLOR_BEGIN);
 
-	FastLED.show();
 
 }
 
 PacmanOled::~PacmanOled()
 {
 	free(leds);
+}
+
+void PacmanOled::begin()
+{
+
+	leds = (CRGB*)malloc(sizeof(CRGB)*nLeds);
+	FastLED.setBrightness(BRIGHTNESS);
+	FastLED.addLeds<WS2812B, OLEDPIN>(leds, nLeds);
+	oneColorRing(COLOR_BEGIN);
+
+	FastLED.show();
 }
 
 void PacmanOled::updateRing(Direction direction, float orientation, int lives, bool energized, bool quarantaine, Status gameStatus)
@@ -42,7 +47,9 @@ void PacmanOled::updateRing(Direction direction, float orientation, int lives, b
 		}
 		else
 		{
+			Serial.println("print direction");
 			directionRing(direction, orientation);
+			Serial.println("printed direction");
 		}
 
 	}

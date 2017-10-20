@@ -6,12 +6,12 @@ int32_t anchors_x[4] = {0, 819, 11745, 17923};               // anchor x-coorind
 int32_t anchors_y[4] = {5, 25828, 0, 25836};                  // anchor y-coordinates in mm
 int32_t anchors_z[4] = {2499, 2595, 2621, 2655};              // anchor z-coordinates in mm
 int strength_filter = 3;
-PacmanPozyx pozyx(num_anchors, anchors,anchors_x,anchors_y,anchors_z, strength_filter);
+PacmanPozyx pozyx(strength_filter);
 
 void setup() {
   // put your setup code here, to run once:
 Serial.begin(115200);
-
+pozyx.begin(num_anchors, anchors,anchors_x,anchors_y,anchors_z);
 pozyx.doPositioning();
 }
 
@@ -33,8 +33,8 @@ void loop() {
        Serial.write((uint8_t*)&orientation,4);
      break;
      case 0x2:
-      Serial.write(0x02);
-      Serial.write(0x02);
+      Serial.write(0x2);
+      Serial.write(0x2);
      break;
   }
 }

@@ -18,17 +18,7 @@ name(player_name)
 {
 
 	//setting up server on device
-	server.begin();
-	server.on("/event/location", std::bind(&PacmanServer::event_location, this));
-	server.on("/event/location_error", std::bind(&PacmanServer::event_location_error, this));
-	server.on("/event/food", std::bind(&PacmanServer::event_food, this));
-	server.on("/event/cherry", std::bind(&PacmanServer::event_cherry, this));
-	server.on("/event/energizer", std::bind(&PacmanServer::event_energizer, this));
-	server.on("/event/cherry_spawned", std::bind(&PacmanServer::event_cherry_spawned, this));
-	server.on("/event/collision", std::bind(&PacmanServer::event_collision, this));
-	server.on("/event/quarantine", std::bind(&PacmanServer::event_quarantine, this));
-	server.on("/event/game_over", std::bind(&PacmanServer::event_game_over, this));
-	server.on("/event/game_won", std::bind(&PacmanServer::event_game_won, this));
+
 }
 
 PacmanServer::~PacmanServer()
@@ -50,6 +40,18 @@ PacmanServer::~PacmanServer()
 
 void PacmanServer::begin()
 {
+	server.begin();
+	server.on("/event/location", std::bind(&PacmanServer::event_location, this));
+	server.on("/event/location_error", std::bind(&PacmanServer::event_location_error, this));
+	server.on("/event/food", std::bind(&PacmanServer::event_food, this));
+	server.on("/event/cherry", std::bind(&PacmanServer::event_cherry, this));
+	server.on("/event/energizer", std::bind(&PacmanServer::event_energizer, this));
+	server.on("/event/cherry_spawned", std::bind(&PacmanServer::event_cherry_spawned, this));
+	server.on("/event/collision", std::bind(&PacmanServer::event_collision, this));
+	server.on("/event/quarantine", std::bind(&PacmanServer::event_quarantine, this));
+	server.on("/event/game_over", std::bind(&PacmanServer::event_game_over, this));
+	server.on("/event/game_won", std::bind(&PacmanServer::event_game_won, this));
+	
 	int httpCode = 0;
 	//register to server
 	Serial.println("registration started");
@@ -73,6 +75,8 @@ void PacmanServer::begin()
 	{
 		character = GHOST;
 	}
+
+
 
 	//start connection with algorithmserver
 	http_register.begin(algo_url + "event/register");
@@ -131,6 +135,7 @@ void PacmanServer::begin()
 void PacmanServer::handleEvents()
 {
 	server.handleClient();
+	Serial.println("events handled");
 }
 
 bool PacmanServer::needUpdatedLocation()
@@ -210,6 +215,7 @@ void PacmanServer::event_location()
 	http_location.addHeader("Content-Type", "application/json");
 	http_location.POST(server.arg(0));
 	server.send(200, "application/json; charset=utf-8", "{\"x\":" + String(posX) + ",\"y\":"+String(posY)+"}");
+	Serial.println("location request");
 	needUpdate = true;
 }
 
@@ -218,6 +224,7 @@ void PacmanServer::event_location_error()
 	http_location_error.addHeader("Content-Type", "application/json");
 	http_location_error.POST(server.arg(0));
 	server.send(200, "application/json; charset=utf-8", "");
+	Serial.println("Location error");
 	needUpdate = true;
 }
 

@@ -7,9 +7,10 @@
 class PacmanOled
 {
 public:
-	PacmanOled(int num_leds, int brightness);
+	PacmanOled(int num_leds);
 	~PacmanOled();
 
+	void begin();
 	void updateRing(Direction direction, float orientation, int lives, bool energized, bool quarantaine, Status gameStatus);
 
 private:
