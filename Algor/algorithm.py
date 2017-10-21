@@ -144,6 +144,7 @@ def game(Own_state, Own_Position, Others_positions,Cherry_position,Food_position
     else:
         path = astar(nmap, Own_Position, Cherry_position(do_kdtree(Cherry_position, Own_Position)))
         return direction(Own_Position - path[-1])
+        
 		
 
 
