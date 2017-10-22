@@ -235,9 +235,9 @@ def locationRequest_handler():
     elif energizedState == True:
         return jsonify('player is energized')
     else:
-        OwnLocation = request.get_json()
-        global Own_Position
-        Own_Position = [OwnLocation['x']/1000, round(OwnLocation['y']/1000)-11]
+     #   OwnLocation = request.get_json()
+      #  global Own_Position
+       # Own_Position = [OwnLocation['x']/1000, round(OwnLocation['y']/1000)-11]
         return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
         
 
