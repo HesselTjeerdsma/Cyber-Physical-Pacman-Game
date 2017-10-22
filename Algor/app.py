@@ -271,22 +271,22 @@ def cherryRemover():
 
 
 @app.route('/energizer', methods = ['POST'])#TODO: GO TO THE NEAREST PLAYER
-    def energizer():
-        energizerUpdateArray = [0,0]
-        energizerUpdate = request.get_json()
+def energizer():
+    energizerUpdateArray = [0,0]
+    energizerUpdate = request.get_json()
 
-        if energizerUpdate['who'] = "Titanic":
-            global energizedState
-            energizedState = True
+    if energizerUpdate['who'] == "Titanic":
+        global energizedState
+        energizedState = True
 
-        energizerUpdateArray[0] = energizerUpdate['location']['x']/1000
-        energizerUpdateArray[1] = round((energizerUpdate['location']['y']/1000)-11)
-        global allPositions
-        if energizerUpdateArray in allPositions:
-            allPositions.remove(energizerUpdateArray)
-            return jsonify('item removed')
-        else:
-            return jsonify('energizer not in list anymore')
+    energizerUpdateArray[0] = energizerUpdate['location']['x']/1000
+    energizerUpdateArray[1] = round((energizerUpdate['location']['y']/1000)-11)
+    global allPositions
+    if energizerUpdateArray in allPositions:
+        allPositions.remove(energizerUpdateArray)
+        return jsonify('item removed')
+    else:
+        return jsonify('energizer not in list anymore')
 
 
 
