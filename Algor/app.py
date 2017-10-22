@@ -230,11 +230,9 @@ def Cherry_remover():
 def locationRequest_handler():
     if setupDone == False:
         return jsonify("Player is not reigstered, run register first!")
-    elif not request.json():
-        return jsonify("no JSON")
     elif energizedState == True:
         return jsonify('player is energized')
-    else:
+    elif request.get_json() == True:
      #   OwnLocation = request.get_json()
       #  global Own_Position
        # Own_Position = [OwnLocation['x']/1000, round(OwnLocation['y']/1000)-11]
