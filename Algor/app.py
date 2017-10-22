@@ -233,7 +233,7 @@ def locationRequest_handler():
     elif not request.json():
         return jsonify("no JSON")
     elif energizedState == True:
-        return game()
+        return jsonify('player is energized')
     else:
         OwnLocation = request.get_json()
         global Own_Position
