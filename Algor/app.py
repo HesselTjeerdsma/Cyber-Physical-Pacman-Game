@@ -19,6 +19,7 @@ Own_Position = np.array([4,23])
 Others_positions = np.array([0,0])
 start = 0
 setupDone = False
+energizedState = False
 
 @app.errorhandler(400)
 def not_found(error):
@@ -197,7 +198,7 @@ def setup_handler():
             setupDone = True
             return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
 
-@app.route('/location', methods = ['POST']) #TODO: STORE LOCATION OF OTHER PLAYERS
+@app.route('/location', methods = ['POST'])
 def Player_location_handler():
     otherLocations = request.get_json()
     amountOtherLocations = len(otherLocations['player_locations'])
@@ -209,7 +210,7 @@ def Player_location_handler():
 
 
 
-@app.route('/cherry_spawned', methods = ['POST']) #TODO: ADD TTL CHERRY
+@app.route('/cherry_spawned', methods = ['POST'])
 def Cherry_handler():
     cherry = request.get_json()
     lifetimeCherry = cherry['lifetime']
@@ -225,12 +226,14 @@ def Cherry_remover():
 
 
 
-@app.route('/direction', methods = ['POST']) #TODO: RESPOND TO LOCATION REQUEST
+@app.route('/direction', methods = ['POST']) #TODO: RESPOND TO LOCATION REQUEST WHEN ENERGIZEDI
 def locationRequest_handler():
     if setupDone == False:
         return jsonify("Player is not reigstered, run register first!")
     elif not request.json():
         return jsonify("no JSON")
+    elif energizedState == True:
+        return game()
     else:
         OwnLocation = request.get_json()
         global Own_Position
@@ -267,7 +270,24 @@ def cherryRemover():
 
 
 
-#@app.route('/energizer', methods = ['POST'])#TODO: GO TO THE NEAREST PLAYER
+@app.route('/energizer', methods = ['POST'])#TODO: GO TO THE NEAREST PLAYER
+    def energizer():
+        energizerUpdateArray = [0,0]
+        energizerUpdate = request.get_json()
+
+        if energizerUpdate['who'] = "Titanic":
+            global energizedState
+            energizedState = True
+
+        energizerUpdateArray[0] = energizerUpdate['location']['x']/1000
+        energizerUpdateArray[1] = round((energizerUpdate['location']['y']/1000)-11)
+        global allPositions
+        if energizerUpdateArray in allPositions:
+            allPositions.remove(energizerUpdateArray)
+            return jsonify('item removed')
+        else:
+            return jsonify('energizer not in list anymore')
+
 
 
 if __name__ == '__main__':
