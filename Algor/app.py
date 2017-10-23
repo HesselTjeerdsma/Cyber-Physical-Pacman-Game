@@ -220,10 +220,8 @@ def setup_handler():
                 global allPositions
                 allPositions[j][0] = allPositions[j][0]/1000
                 allPositions[j][1] = allPositions[j][1]/1000
-				
             b_set = set(tuple(x) for x in allPositions)
-			allPositions = [ list(x) for x in b_set ]
-			
+            allPositions = [list(x) for x in b_set]
             global setupDone
             setupDone = True
             return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
