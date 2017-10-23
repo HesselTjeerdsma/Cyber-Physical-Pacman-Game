@@ -186,30 +186,29 @@ def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
         closeLocation = do_kdtree(allPositions,Own_Position)
         path = astar(nmap,(Own_Position[0],Own_Position[1]),(closeLocation[0],closeLocation[1]))
         #return jsonify(path)
-        nmap = nmap_tmp
+        # nmap = nmap_tmp
         return jsonify(direction(Own_Position-path[-1]))
     else:
-        path = astar(nmap, Own_Position, allPositions(do_kdtree(allPositions, Own_Position)))
+        path = astar(nmap,(Own_Position[0],Own_Position[1]),(closeLocation[0],closeLocation[1]))
         nmap = nmap_tmp
         return jsonify(direction(Own_Position - path[-1]))
 
 	
 @app.route('/register', methods = ['POST'])
 def setup_handler():
+        global allPositions
         if not request.json:
             return jsonify('no json')
         else:
             settings = request.get_json() 
             amountFood = len(settings['food_locations'])
             for i in xrange(0, amountFood):
-                amountFoodArray = [settings['food_locations'][i]['x'], settings['food_locations'][i]['y']]   
-                global allPositions
+                amountFoodArray = [settings['food_locations'][i]['x'], settings['food_locations'][i]['y']]
                 allPositions.append(amountFoodArray)
             
             amountEnergizer = len(settings['energizer_locations'])
             for x in xrange(0, amountEnergizer):
                 amountEnergizerArray = [settings['energizer_locations'][x]['x'], settings['energizer_locations'][x]['y']]
-                global allPositions
                 allPositions.append(amountEnergizerArray)
             
             global Own_state
@@ -217,11 +216,15 @@ def setup_handler():
              
             amountPositions = len(allPositions)
             for j in xrange(0, amountPositions):
-                global allPositions
                 allPositions[j][0] = allPositions[j][0]/1000
                 allPositions[j][1] = allPositions[j][1]/1000
             b_set = set(tuple(x) for x in allPositions)
+<<<<<<< HEAD
+            allPositions = [ list(x) for x in b_set ]
+			
+=======
             allPositions = [list(x) for x in b_set]
+>>>>>>> 4319eeb277a322ac54f9da964a3f720b6067632a
             global setupDone
             setupDone = True
             return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
