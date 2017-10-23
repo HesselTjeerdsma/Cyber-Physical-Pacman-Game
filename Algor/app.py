@@ -15,8 +15,8 @@ numpy.set_printoptions(threshold=numpy.nan)
 app = Flask(__name__)
 allPositions = []
 Own_state = 0
-Own_Position = np.array([4,14])
-Others_positions = np.array([146,37])
+Own_Position = np.array([13,4])
+Others_positions = np.array([36,147])
 start = 0
 setupDone = False
 energizedState = False
@@ -191,7 +191,7 @@ def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
     else:
         path = astar(nmap,(Own_Position[0],Own_Position[1]),(Others_positions[0],Others_positions[1]))
         nmap = nmap_tmp
-        return jsonify(path)
+        return jsonify(direction(Own_Position-path[-1]))
 
 	
 @app.route('/register', methods = ['POST'])
