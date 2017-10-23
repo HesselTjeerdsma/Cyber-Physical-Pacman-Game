@@ -30,7 +30,7 @@ typedef enum {
 } Direction;
 
 //define pins
-#define OLEDPIN 5
+#define OLEDPIN 18
 #define PIN_LED1 25
 #define PIN_LED2 26
 #define PIN_LED3 27
@@ -39,7 +39,9 @@ typedef enum {
 
 #define SCREENADRESS 0x3c
 
-#define HANDLE_EVENTS_MICROSECONDS 10000 // 10 milliseconds
+#define HANDLE_EVENTS_MICROSECONDS 100000 // 100 milliseconds
+
+#define NUM_LED 16
 
 //define miliseconds show of the screen
 #define STARTSCREEN 5000
@@ -52,16 +54,16 @@ typedef enum {
 
 //define visual time aspects in milliseconds
 #define LED_BLINK 500
-#define ENERGIZER_SPEED 50
+#define ENERGIZER_SPEED 2500 //micro
 #define QUARANTAINE_SPEED 250
 
-#define BRIGHTNESS 3
+#define BRIGHTNESS 20
 //define colors
-#define COLOR_QUARANTAINE1		0xFF5500 //bright orange
-#define COLOR_QUARANTAINE2		0xFF8800 //dark orange
-#define COLOR_WON				0x00FF00 //green
-#define COLOR_LOST				0xFF0000 //red
-#define COLOR_BEGIN				0x000000 //black
+#define COLOR_QUARANTAINE1		0x33FF00 //bright orange
+#define COLOR_QUARANTAINE2		0x77FF00 //dark orange
+#define COLOR_WON				0xFF0000 //green
+#define COLOR_LOST				0x00FF00 //red
+#define COLOR_BEGIN				0xFFFFFF //black
 #define COLOR_DEAD				0x000000 //black
-#define COLOR_BACKGROUND		0x00FFFF //light blue
+#define COLOR_BACKGROUND		0x110011 //light blue
 #define COLOR_DIRECTION			0xFFFFFF //white

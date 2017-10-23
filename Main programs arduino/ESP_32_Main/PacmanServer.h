@@ -22,6 +22,7 @@ public:
 	long getScore();
 	int getLives();
 	Direction getDirection();
+	int getIntensity();
 	bool inQuarantaine();
 	bool isEnergized();
 	Status getGameStatus();
@@ -43,6 +44,7 @@ private:
 	HTTPClient http_game_over;
 	HTTPClient http_game_won;
 	HTTPClient http_direction;
+	HTTPClient http_intensity;
 	ESP32WebServer server;
 
 	//server side request handler

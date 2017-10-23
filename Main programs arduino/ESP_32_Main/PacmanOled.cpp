@@ -1,35 +1,35 @@
 #include <Arduino.h>
 #include "PacmanOled.h"
+#include "FastLED.h"
 
-PacmanOled::PacmanOled(int num_leds)
+PacmanOled::PacmanOled()
 :
-	nLeds(num_leds),
 	energized_timer(0),
-	rainbowcolor(0),
 	quarantaine_color(true),
 	quarantaine_timer(0)
 {
-
-
+	randomSeed(micros());
+	rainbowcolor = random(256);
 }
 
 PacmanOled::~PacmanOled()
 {
-	free(leds);
+
 }
 
 void PacmanOled::begin()
 {
 
-	leds = (CRGB*)malloc(sizeof(CRGB)*nLeds);
+	
+	pinMode(OLEDPIN,OUTPUT);
+	FastLED.addLeds<WS2812, OLEDPIN>(leds, NUM_LED);
 	FastLED.setBrightness(BRIGHTNESS);
-	FastLED.addLeds<WS2812B, OLEDPIN>(leds, nLeds);
+	delay(10);
 	oneColorRing(COLOR_BEGIN);
-
 	FastLED.show();
 }
 
-void PacmanOled::updateRing(Direction direction, float orientation, int lives, bool energized, bool quarantaine, Status gameStatus)
+void PacmanOled::update(Direction direction, int intensity, float orientation, int lives, bool energized, bool quarantaine, Status gameStatus)
 {
 	if (lives == 0)
 	{
@@ -47,9 +47,8 @@ void PacmanOled::updateRing(Direction direction, float orientation, int lives, b
 		}
 		else
 		{
-			Serial.println("print direction");
-			directionRing(direction, orientation);
-			Serial.println("printed direction");
+			
+			directionRing(direction,intensity, orientation);
 		}
 
 	}
@@ -67,7 +66,7 @@ void PacmanOled::updateRing(Direction direction, float orientation, int lives, b
 
 void PacmanOled::oneColorRing(CRGB color)
 {
-	for (int i = 0; i < nLeds; i++)
+	for (int i = 0; i < NUM_LED; i++)
 	{
 		leds[i] = color;
 	}
@@ -75,13 +74,13 @@ void PacmanOled::oneColorRing(CRGB color)
 
 void PacmanOled::energizedRing()
 {
-	if (millis() > energized_timer)
+	if (micros() > energized_timer)
 	{
-		energized_timer = millis() + ENERGIZER_SPEED;
-		rainbowcolor = (rainbowcolor + 1) % 256;
-		for (int i = 0; i < nLeds; i++)
+		energized_timer = micros() + ENERGIZER_SPEED;
+		rainbowcolor = (rainbowcolor+4) % 256;
+		for (int i = 0; i < NUM_LED; i++)
 		{
-			leds[i] = wheel((i * 256 / nLeds + rainbowcolor) % 256);
+			leds[i] = wheel((i * 256 / NUM_LED + rainbowcolor) % 256);
 		}
 
 	}
@@ -106,29 +105,29 @@ void PacmanOled::quarantaineRing()
 	}
 }
 
-void PacmanOled::directionRing(Direction direction, float orientation)
+void PacmanOled::directionRing(Direction direction, int intensity, float orientation)
 {
 	oneColorRing(COLOR_BACKGROUND);
-	int i = (int)(16-(0.5 + orientation / 22.5) + (float)direction) % nLeds;
-	leds[i] = COLOR_DIRECTION;
+	int i = (int)(16+(0.5 + orientation / 22.5) - (float)direction) % NUM_LED;
+	leds[i] = ((((COLOR_DIRECTION & 0xFF0000)>>4)*intensity / 10)<<4) | ((((COLOR_DIRECTION & 0x00FF00) >> 2) * intensity / 10) << 2) | ((COLOR_DIRECTION & 0x0000FF) * intensity / 10);
 }
 
 CRGB PacmanOled::wheel(int WheelPos) {
 	CRGB color;
 	if (85 > WheelPos) {
 		color.r = 0;
-		color.g = WheelPos;
-		color.b = (255 - WheelPos);
+		color.g = 3*WheelPos;
+		color.b = (255 - 3*WheelPos);
 	}
 	else if (170 > WheelPos) {
-		color.r = WheelPos;
-		color.g = (255 - WheelPos);
+		color.r = 3*WheelPos;
+		color.g = (255 - 3*WheelPos);
 		color.b = 0;
 	}
 	else {
-		color.r = (255 - WheelPos);
+		color.r = (255 - 3*WheelPos);
 		color.g = 0;
-		color.b = WheelPos;
+		color.b = 3*WheelPos;
 	}
 	return color;
 }

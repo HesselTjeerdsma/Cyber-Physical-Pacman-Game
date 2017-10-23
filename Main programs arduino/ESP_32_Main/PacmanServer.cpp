@@ -35,6 +35,7 @@ PacmanServer::~PacmanServer()
 	http_game_over.end();
 	http_game_won.end();
 	http_direction.end();
+	http_intensity.end();
 	server.close();
 }
 
@@ -67,6 +68,8 @@ void PacmanServer::begin()
 	http_register.end();
 	//set local variables
 	JsonObject& root = jsonBuffer.parseObject(registrationResponse);
+	String temp = root["type"];
+	Serial.println(temp);
 	if (root["type"] == "pacman")
 	{
 		character = PACMAN;
@@ -128,6 +131,10 @@ void PacmanServer::begin()
 	http_direction.setReuse(true);
 	http_direction.addHeader("Content-Type", "application/json");
 
+	http_intensity.begin(algo_url + "event/intensity");
+	http_intensity.setReuse(true);
+	http_intensity.addHeader("Content-Type", "application/json");
+
 	//give register info to algo server
 	http_register.POST(registrationResponse );
 }
@@ -173,6 +180,16 @@ Direction	PacmanServer::getDirection()
 	JsonObject& root = jsonBuffer.parseObject(http_direction.getString());
 	direction =Direction((int)root["direction"]);
 	return direction;
+}
+
+int PacmanServer::getIntensity()
+{
+	http_intensity.addHeader("Content-Type", "application/json");
+	http_intensity.POST("{\"intensity\":True}");
+	StaticJsonBuffer<JSON_OBJECT_SIZE(1)> jsonBuffer;
+	JsonObject& root = jsonBuffer.parseObject(http_intensity.getString());
+	int intensity = root["intensity"];
+	return intensity;
 }
 
 bool PacmanServer::inQuarantaine()
