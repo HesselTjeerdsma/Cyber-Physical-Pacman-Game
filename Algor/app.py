@@ -203,12 +203,12 @@ def setup_handler():
             settings = request.get_json() 
             amountFood = len(settings['food_locations'])
             for i in xrange(0, amountFood):
-                amountFoodArray = [settings['food_locations'][i]['x'], settings['food_locations'][i]['y']]
+                amountFoodArray = [settings['food_locations'][i]['y'], settings['food_locations'][i]['x']]
                 allPositions.append(amountFoodArray)
             
             amountEnergizer = len(settings['energizer_locations'])
             for x in xrange(0, amountEnergizer):
-                amountEnergizerArray = [settings['energizer_locations'][x]['x'], settings['energizer_locations'][x]['y']]
+                amountEnergizerArray = [settings['energizer_locations'][x]['y'], settings['energizer_locations'][x]['x']]
                 allPositions.append(amountEnergizerArray)
             
             global Own_state
@@ -231,7 +231,7 @@ def Player_location_handler():
     otherLocations = request.get_json()
     amountOtherLocations = len(otherLocations['player_locations'])
     for i in xrange(0, amountOtherLocations):
-        OtherLocationsArray = [otherLocations['player_locations'][i]['x']/1000, (otherLocations['player_locations'][i]['y']/1000)]   
+        OtherLocationsArray = [otherLocations['player_locations'][i]['y']/1000, (otherLocations['player_locations'][i]['x']/1000)]   
         global Others_positions
         Others_positions.append(OtherLocationsArray)
     return jsonify('player locations have been stored')
@@ -244,7 +244,7 @@ def Cherry_handler():
     lifetimeCherry = cherry['lifetime']
     StartCherry = time.time()
     global cherryLocation
-    cherryLocation = [cherry['location']['x']/1000,round(cherry['location']['y']/1000)]
+    cherryLocation = [cherry['location']['y']/1000,round(cherry['location']['x']/1000)]
     allPositions.append(cherryLocation)
     TTL = Timer(lifetimeCherry, Cherry_remover)
     TTL.start()
@@ -259,8 +259,11 @@ def locationRequest_handler():
     if setupDone == False:
         return jsonify("Player is not reigstered, run register first!")
     elif energizedState == True:
-        return jsonify('player is energized')
-    elif request.get_json() == True:
+        return game("ghost", Own_Position, Others_positions, allPositions, nmap)
+    else:
+        esp_locatation = request.get_json()
+        global Own_Position
+        Own_Position = [esp_locatation['y'], esp_locatation['x']]
         return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
         
 
@@ -268,8 +271,8 @@ def locationRequest_handler():
 def foodRemover(): 
     foodUpdateArray = [0,0]
     foodUpdate = request.get_json()
-    foodUpdateArray[0] = foodUpdate['location']['x']/1000
-    foodUpdateArray[1] = round((foodUpdate['location']['y']/1000))
+    foodUpdateArray[0] = foodUpdate['location']['y']/1000
+    foodUpdateArray[1] = round((foodUpdate['location']['x']/1000))
     global allPositions
     if foodUpdateArray in allPositions:
         allPositions.remove(foodUpdateArray)
@@ -282,8 +285,8 @@ def foodRemover():
 def cherryRemover(): 
     cherryUpdateArray = [0,0]
     cherryUpdate = request.get_json()
-    cherryUpdateArray[0] = cherryUpdate['location']['x']/1000
-    cherryUpdateArray[1] = round((cherryUpdate['location']['y']/1000))
+    cherryUpdateArray[0] = cherryUpdate['location']['y']/1000
+    cherryUpdateArray[1] = round((cherryUpdate['location']['x']/1000))
     global allPositions
     if cherryUpdateArray in allPositions:
         allPositions.remove(cherryUpdateArray)
@@ -302,8 +305,8 @@ def energizer():
         global energizedState
         energizedState = True
 
-    energizerUpdateArray[0] = energizerUpdate['location']['x']/1000
-    energizerUpdateArray[1] = round((energizerUpdate['location']['y']/1000))
+    energizerUpdateArray[0] = energizerUpdate['location']['y']/1000
+    energizerUpdateArray[1] = round((energizerUpdate['location']['x']/1000))
     global allPositions
     if energizerUpdateArray in allPositions:
         allPositions.remove(energizerUpdateArray)
