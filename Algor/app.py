@@ -221,7 +221,7 @@ def setup_handler():
 
             b_set = set(tuple(x) for x in allPositions)
             allPositions = [ list(x) for x in b_set ]
-			
+
             global setupDone
             setupDone = True
             return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
