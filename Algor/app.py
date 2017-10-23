@@ -191,7 +191,7 @@ def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
     else:
         path = astar(nmap,(Own_Position[0],Own_Position[1]),(Others_positions[0],Others_positions[1]))
         nmap = nmap_tmp
-        return jsonify(direction(Own_Position - path[-1]))
+        return jsonify(path)
 
 	
 @app.route('/register', methods = ['POST'])
