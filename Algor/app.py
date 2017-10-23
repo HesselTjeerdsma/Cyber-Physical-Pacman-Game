@@ -12,16 +12,18 @@ import scipy.io as sio
 from heapq import *
 from threading import Timer
 from random import randint
+from numpy import interp
 numpy.set_printoptions(threshold=numpy.nan)
 app = Flask(__name__)
 allPositions = []
 Own_state = 0
-Own_Position = np.array([13,4])
+Own_Position = np.array([12,1])
 Others_positions = []
-Others_positions.append([36,147])
+Others_positions.append([36,144])
 start = 0
 setupDone = False
 energizedState = False
+path = []
 
 @app.errorhandler(400)
 def not_found(error):
@@ -166,6 +168,7 @@ nmap = numpy.array([
 nmap_tmp = nmap
 
 def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
+    global path
     player = Own_state
     Area = np.ones((9, 9))
     if player == 'pacman': # if player is pacman
@@ -191,7 +194,7 @@ def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
         nmap = nmap_tmp
         if path == False:
             return jsonify(randint(0,15))
-        #return jsonify(path)
+        return jsonify(path)
         # nmap = nmap_tmp
         return jsonify(direction(Own_Position-path[-1]))
     else:
@@ -205,6 +208,7 @@ def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
 	
 @app.route('/register', methods = ['POST'])
 def setup_handler():
+        global path
         global allPositions
         if not request.json:
             return jsonify('no json')
@@ -245,6 +249,15 @@ def Player_location_handler():
         Others_positions.append(OtherLocationsArray)
     return jsonify('player locations have been stored')
 
+@app.route('/intensity', methods = ['POST'])
+def intensity_handler():
+    #return jsonify(len(path))
+    if len(path) <= 20 and len(path)>= 1:
+        return jsonify(len(path)/2)
+    else:
+        return jsonify(1)
+    
+
 
 
 @app.route('/cherry_spawned', methods = ['POST'])
@@ -265,14 +278,14 @@ def Cherry_remover():
 
 @app.route('/direction', methods = ['POST']) #TODO: RESPOND TO LOCATION REQUEST WHEN ENERGIZEDI
 def locationRequest_handler():
+    global Own_Position
+    esp_locatation = request.get_json()
+    Own_Position = [round(esp_locatation['y']/500), round(esp_locatation['x']/500)]
     if setupDone == False:
         return jsonify("Player is not reigstered, run register first!")
     elif energizedState == True:
         return game("ghost", Own_Position, Others_positions, allPositions, nmap)
     else:
-        esp_locatation = request.get_json()
-        global Own_Position
-        Own_Position = [esp_locatation['y'], esp_locatation['x']]
         return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
         
 
