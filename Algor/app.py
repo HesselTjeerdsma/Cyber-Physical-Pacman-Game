@@ -189,6 +189,7 @@ def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
         # nmap = nmap_tmp
         return jsonify(direction(Own_Position-path[-1]))
     else:
+        closeLocation = do_kdtree(Others_positions, Own_Position)
         path = astar(nmap,(Own_Position[0],Own_Position[1]),(closeLocation[0],closeLocation[1]))
         nmap = nmap_tmp
         return jsonify(direction(Own_Position - path[-1]))
