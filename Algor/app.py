@@ -25,6 +25,7 @@ Score = 0
 setupDone = False
 energizedState = False
 path = []
+collided = True
 
 @app.errorhandler(400)
 def not_found(error):
@@ -38,6 +39,10 @@ def do_kdtree(combined_x_y_arrays,points):
     mytree = scipy.spatial.cKDTree(combined_x_y_arrays)
     dist, indexes = mytree.query(points)
     return combined_x_y_arrays[indexes]
+
+
+
+
 
 def direction(coordinate):
 	if coordinate[0] and coordinate[1] == -1:
@@ -170,6 +175,7 @@ nmap_tmp = nmap
 
 def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
     global path
+    global collided
     player = Own_state
     Area = np.ones((9, 9))
     if player == 'pacman': # if player is pacman
@@ -200,7 +206,12 @@ def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
         return jsonify(direction(Own_Position-path[-1]))
     else:
         closestOthers_Postition = do_kdtree(Others_positions,Own_Position)
-        path = astar(nmap,(Own_Position[0],Own_Position[1]),(closestOthers_Postition[0],closestOthers_Postition[1]))
+        if collided == False:
+            path = astar(nmap,(Own_Position[0],Own_Position[1]),(closestOthers_Postition[0],closestOthers_Postition[1]))
+        else:
+            closestOthers_Postition = do_kdtree(Others_positions.remove(closestOthers_Postition),Own_Position)
+            path = astar(nmap,(Own_Position[0],Own_Position[1]),(closestOthers_Postition[0],closestOthers_Postition[1]))
+
         nmap = nmap_tmp
         if path == False:
             return jsonify(randint(0,15))
@@ -241,14 +252,36 @@ def setup_handler():
             #return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
             return jsonify("succes")
 
+@app.route('/event/collision', methods = ['POST'])
+def collision_detector():
+    global collided
+    collided = True
+    CCL = Timer(7, collision_reset)
+    CCL.start()
+    return jsonify('collided with player')
+
+def collision_reset():
+    global collided
+    collided = False
+
+@app.route('/test', methods = ['GET'])
+def test():
+    global collided
+    return jsonify(collided)
+
+
 @app.route('/event/location', methods = ['POST'])
 def Player_location_handler():
     otherLocations = request.get_json()
+    player_locations = (otherLocations['player_locations']).values()
     amountOtherLocations = len(otherLocations['player_locations'])
     for i in xrange(0, amountOtherLocations):
-        OtherLocationsArray = [round(otherLocations['player_locations'][i]['y']/500), round(otherLocations['player_locations'][i]['x']/500)]   
+        OtherLocationsArray = [player_locations[i]['y']/500, player_locations[i]['x']/500]   
         global Others_positions
         Others_positions.append(OtherLocationsArray)
+    b_set = set(tuple(x) for x in Others_positions)
+    Others_positions = [ list(x) for x in b_set ]
+
     return jsonify('player locations have been stored')
 
 @app.route('/event/intensity', methods = ['POST'])
@@ -266,7 +299,6 @@ def intensity_handler():
 def Cherry_handler():
     cherry = request.get_json()
     lifetimeCherry = cherry['lifetime']
-    StartCherry = time.time()
     global cherryLocation
     cherryLocation = [round(cherry['location']['y']/500),round(cherry['location']['x']/500)]
     allPositions.append(cherryLocation)
