@@ -24,7 +24,7 @@ Score = 0
 setupDone = False
 energizedState = False
 path = []
-collided = True
+collided = False
 
 @app.errorhandler(400)
 def not_found(error):
@@ -194,16 +194,20 @@ def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
                 else:
                     nmap0 = closestOthers_Postition[1]-4+j
                 nmap[nmap0][nmap1] = 1
-                
+        if Own_Position in allPositions:
+            allPositions.remove(Own_Position)        
         closeLocation = do_kdtree(allPositions,Own_Position)
         path = astar(nmap,(Own_Position[0],Own_Position[1]),(closeLocation[0],closeLocation[1]))
         nmap = nmap_tmp
+        return jsonify(path)
         if path == False:
             return jsonify(randint(0,15))
-        #return jsonify(path)
+        
         # nmap = nmap_tmp
-        return jsonify(direction(Own_Position-path[-1]))
+        #return jsonify(direction(Own_Position-path[-1]))
     else:
+        if Own_Position in Others_positions:
+            Others_positions.remove(Own_Position)    
         closestOthers_Postition = do_kdtree(Others_positions,Own_Position)
         if collided == False:
             path = astar(nmap,(Own_Position[0],Own_Position[1]),(closestOthers_Postition[0],closestOthers_Postition[1]))
@@ -240,8 +244,8 @@ def setup_handler():
              
             amountPositions = len(allPositions)
             for j in xrange(0, amountPositions):
-                allPositions[j][0] = round(allPositions[j][0]/500)
-                allPositions[j][1] = round(allPositions[j][1]/500)
+                allPositions[j][0] = int(allPositions[j][0]/500)-1
+                allPositions[j][1] = int(allPositions[j][1]/500)-1
 
             b_set = set(tuple(x) for x in allPositions)
             allPositions = [ list(x) for x in b_set ]
@@ -275,7 +279,7 @@ def Player_location_handler():
     player_locations = (otherLocations['player_locations']).values()
     amountOtherLocations = len(otherLocations['player_locations'])
     for i in xrange(0, amountOtherLocations):
-        OtherLocationsArray = [player_locations[i]['y']/500, player_locations[i]['x']/500]   
+        OtherLocationsArray = [int(player_locations[i]['y']/500)-1, (int(player_locations[i]['x']/500)-1]   
         global Others_positions
         Others_positions.append(OtherLocationsArray)
     b_set = set(tuple(x) for x in Others_positions)
@@ -318,7 +322,7 @@ def Cherry_remover():
 def locationRequest_handler():
     global Own_Position
     esp_locatation = request.get_json()
-    Own_Position = [round(esp_locatation['y']/500), round(esp_locatation['x']/500)]
+    Own_Position = [int(esp_locatation['y']/500)-1, int(esp_locatation['x']/500)-1]
     if setupDone == False:
         return jsonify("Player is not reigstered, run register first!")
     elif energizedState == True:
