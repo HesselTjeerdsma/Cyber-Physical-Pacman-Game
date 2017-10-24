@@ -195,7 +195,7 @@ def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
         nmap = nmap_tmp
         if path == False:
             return jsonify(randint(0,15))
-        return jsonify(path)
+        #return jsonify(path)
         # nmap = nmap_tmp
         return jsonify(direction(Own_Position-path[-1]))
     else:
@@ -274,8 +274,13 @@ def Cherry_handler():
     TTL.start()
     return jsonify('Cherry has been added and will be removed in', lifetimeCherry, 'seconds')
 def Cherry_remover():
-    allPositions.remove(cherryLocation)
-
+    global cherryLocation
+    global allPositions
+    if cherryLocation in allPositions:
+        allPositions.remove(cherryLocation)
+        return 'Cherry removed'
+    else:
+        return 'no Cherry'
 
 
 @app.route('/event/direction', methods = ['POST']) #TODO: RESPOND TO LOCATION REQUEST WHEN ENERGIZEDI
