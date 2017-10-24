@@ -1,6 +1,6 @@
 #!flask/bin/python
 # Author: Jonathan Ridderstap
-# A* Pathfinding in Python (3.6)
+# A* Pathfinding in Python (2.7)
 # Please give credit if used
 #https://vrcfpa5qvi.execute-api.eu-west-2.amazonaws.com/dev
 from flask import Flask, jsonify, abort, request, make_response, url_for
@@ -21,6 +21,7 @@ Own_Position = np.array([12,1])
 Others_positions = []
 Others_positions.append([36,144])
 start = 0
+Score = 0
 setupDone = False
 energizedState = False
 path = []
@@ -206,7 +207,7 @@ def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
         return jsonify(direction(Own_Position-path[-1]))
 
 	
-@app.route('/register', methods = ['POST'])
+@app.route('/event/register', methods = ['POST'])
 def setup_handler():
         global path
         global allPositions
@@ -237,9 +238,10 @@ def setup_handler():
 
             global setupDone
             setupDone = True
-            return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
+            #return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
+            return jsonify("succes")
 
-@app.route('/location', methods = ['POST'])
+@app.route('/event/location', methods = ['POST'])
 def Player_location_handler():
     otherLocations = request.get_json()
     amountOtherLocations = len(otherLocations['player_locations'])
@@ -249,7 +251,7 @@ def Player_location_handler():
         Others_positions.append(OtherLocationsArray)
     return jsonify('player locations have been stored')
 
-@app.route('/intensity', methods = ['POST'])
+@app.route('/event/intensity', methods = ['POST'])
 def intensity_handler():
     #return jsonify(len(path))
     if len(path) <= 20 and len(path)>= 1:
@@ -260,7 +262,7 @@ def intensity_handler():
 
 
 
-@app.route('/cherry_spawned', methods = ['POST'])
+@app.route('/event/cherry_spawned', methods = ['POST'])
 def Cherry_handler():
     cherry = request.get_json()
     lifetimeCherry = cherry['lifetime']
@@ -276,7 +278,7 @@ def Cherry_remover():
 
 
 
-@app.route('/direction', methods = ['POST']) #TODO: RESPOND TO LOCATION REQUEST WHEN ENERGIZEDI
+@app.route('/event/direction', methods = ['POST']) #TODO: RESPOND TO LOCATION REQUEST WHEN ENERGIZEDI
 def locationRequest_handler():
     global Own_Position
     esp_locatation = request.get_json()
@@ -289,13 +291,15 @@ def locationRequest_handler():
         return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
         
 
-@app.route('/food', methods = ['POST'])     #TODO: REMOVE FOOD FROM ALLPOSITIONS ARRAY
+@app.route('/event/food', methods = ['POST'])     #TODO: REMOVE FOOD FROM ALLPOSITIONS ARRAY
 def foodRemover(): 
     foodUpdateArray = [0,0]
     foodUpdate = request.get_json()
     foodUpdateArray[0] = round(foodUpdate['location']['y']/500)
     foodUpdateArray[1] = round((foodUpdate['location']['x']/500))
+    Score = foodUpdate['score']
     global allPositions
+    global Score
     if foodUpdateArray in allPositions:
         allPositions.remove(foodUpdateArray)
         return jsonify('item removed')
@@ -303,7 +307,7 @@ def foodRemover():
         return jsonify('food not in list anymore')
     
 
-@app.route('/cherry', methods = ['POST'])   #TODO: REMOVE CHERRY FROM ALLPOSISTION ARRAY
+@app.route('/event/cherry', methods = ['POST'])   #TODO: REMOVE CHERRY FROM ALLPOSISTION ARRAY
 def cherryRemover(): 
     cherryUpdateArray = [0,0]
     cherryUpdate = request.get_json()
@@ -318,7 +322,7 @@ def cherryRemover():
 
 
 
-@app.route('/energizer', methods = ['POST'])#TODO: GO TO THE NEAREST PLAYER
+@app.route('/event/energizer', methods = ['POST'])#TODO: GO TO THE NEAREST PLAYER
 def energizer():
     energizerUpdateArray = [0,0]
     energizerUpdate = request.get_json()
@@ -335,6 +339,7 @@ def energizer():
         return jsonify('item removed')
     else:
         return jsonify('energizer not in list anymore')
+
 
 
 
