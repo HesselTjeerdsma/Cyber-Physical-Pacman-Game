@@ -1,5 +1,4 @@
 #!flask/bin/python
-# Author: Jonathan Ridderstap
 # A* Pathfinding in Python (2.7)
 # Please give credit if used
 #https://vrcfpa5qvi.execute-api.eu-west-2.amazonaws.com/dev
