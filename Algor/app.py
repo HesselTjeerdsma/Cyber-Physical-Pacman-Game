@@ -227,6 +227,7 @@ def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
         nmap = nmap_tmp
         if path == False:
             return jsonify(path)#randint(0,15))
+        cherryLocation_toremove = [0,0]
         Others_positions.remove(cherryLocation_toremove)
         return jsonify(direction(Own_Position-path[-1]))
         #return jsonify(path)
