@@ -39,28 +39,31 @@ def do_kdtree(combined_x_y_arrays,points):
     dist, indexes = mytree.query(points)
     return combined_x_y_arrays[indexes]
 
+def conversion(not_converted):
+    return int(not_converted/500)
+
 
 
 
 
 def direction(coordinate):
-	if coordinate[0] and coordinate[1] == -1:
-		direction = 12 #W
-	elif coordinate[0] and coordinate[1] == 1:	
-		direction = 4 #E
-	elif coordinate[0] == -1 and coordinate[1] == 0:
-		direction =  14 #NW
-	elif coordinate[0] == -1 and coordinate[1] == 1:
-		direction =  0 #N
-	elif coordinate[0] == 0 and coordinate[1] == 1:
-		direction =  2 #NE
-	elif coordinate[0] == 1 and coordinate[1] == -1:
-		direction =  8 # S
-	elif coordinate[0] == 1 and coordinate[1] == 0:
-		direction =  6 # SE
-	else:
-		direction =  10 #SW
-	return direction
+    if coordinate[0] and coordinate[1] == -1:
+        direction = 12 #W
+    elif coordinate[0] and coordinate[1] == 1:  
+        direction = 4 #E
+    elif coordinate[0] == -1 and coordinate[1] == 0:
+        direction =  14 #NW
+    elif coordinate[0] == -1 and coordinate[1] == 1:
+        direction =  0 #N
+    elif coordinate[0] == 0 and coordinate[1] == 1:
+        direction =  2 #NE
+    elif coordinate[0] == 1 and coordinate[1] == -1:
+        direction =  8 # S
+    elif coordinate[0] == 1 and coordinate[1] == 0:
+        direction =  6 # SE
+    else:
+        direction =  10 #SW
+    return direction
 
 def heuristic(a, b):
     return (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2
@@ -199,13 +202,17 @@ def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
         closeLocation = do_kdtree(allPositions,Own_Position)
         path = astar(nmap,(Own_Position[0],Own_Position[1]),(closeLocation[0],closeLocation[1]))
         nmap = nmap_tmp
-        return jsonify(path)
+        #return jsonify(path)
         if path == False:
             return jsonify(randint(0,15))
         
-        # nmap = nmap_tmp
-        #return jsonify(direction(Own_Position-path[-1]))
+        #return jsonify(path)
+        return jsonify(direction(Own_Position-path[-1]))
     else:
+        global cherryLocation
+        if cherryLocation:
+            cherryLocation = cherryLocation_toremove
+            Others_positions.append(cherryLocation)
         if Own_Position in Others_positions:
             Others_positions.remove(Own_Position)    
         closestOthers_Postition = do_kdtree(Others_positions,Own_Position)
@@ -217,10 +224,11 @@ def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
 
         nmap = nmap_tmp
         if path == False:
-            return jsonify(randint(0,15))
+            return jsonify(path)#randint(0,15))
+        Others_positions.remove(cherryLocation_toremove)
         return jsonify(direction(Own_Position-path[-1]))
-
-	
+        #return jsonify(path)
+    
 @app.route('/event/register', methods = ['POST'])
 def setup_handler():
         global path
@@ -244,19 +252,23 @@ def setup_handler():
              
             amountPositions = len(allPositions)
             for j in xrange(0, amountPositions):
-                allPositions[j][0] = int(allPositions[j][0]/500)-1
-                allPositions[j][1] = int(allPositions[j][1]/500)-1
+                allPositions[j][0] = conversion(allPositions[j][0])
+                allPositions[j][1] = conversion(allPositions[j][1])
 
             b_set = set(tuple(x) for x in allPositions)
             allPositions = [ list(x) for x in b_set ]
-
+            #return jsonify(allPositions)
             global setupDone
             setupDone = True
             #return game(Own_state, Own_Position, Others_positions,allPositions, nmap)
             return jsonify("succes")
 
 @app.route('/event/collision', methods = ['POST'])
-def collision_detector():
+def collision_detector():   
+    #ghost_array = []
+    #collision_data = request.get_json()
+   # if Own_state == 'pacman':
+    #    collision_data['player']
     global collided
     collided = True
     CCL = Timer(7, collision_reset)
@@ -267,10 +279,11 @@ def collision_reset():
     global collided
     collided = False
 
-@app.route('/test', methods = ['GET'])
+@app.route('/locationstest', methods = ['GET'])
 def test():
-    global collided
-    return jsonify(collided)
+    global Own_Position
+    listofthigsprint.append(Own_Position)
+    return jsonify(listofthigsprint)
 
 
 @app.route('/event/location', methods = ['POST'])
@@ -279,9 +292,9 @@ def Player_location_handler():
     player_locations = (otherLocations['player_locations']).values()
     amountOtherLocations = len(otherLocations['player_locations'])
     for i in xrange(0, amountOtherLocations):
-        OtherLocationsArray = [int(player_locations[i]['y']/500)-1, (int(player_locations[i]['x']/500)-1]   
+        OtherLocationsArray = [conversion(player_locations[i]['y']), conversion(player_locations[i]['x'])]
         global Others_positions
-        Others_positions.append(OtherLocationsArray)
+        Others_positions = OtherLocationsArray
     b_set = set(tuple(x) for x in Others_positions)
     Others_positions = [ list(x) for x in b_set ]
 
@@ -303,7 +316,7 @@ def Cherry_handler():
     cherry = request.get_json()
     lifetimeCherry = cherry['lifetime']
     global cherryLocation
-    cherryLocation = [round(cherry['location']['y']/500),round(cherry['location']['x']/500)]
+    cherryLocation = [conversion(cherry['location']['y']),conversion(cherry['location']['x'])]
     allPositions.append(cherryLocation)
     TTL = Timer(lifetimeCherry, Cherry_remover)
     TTL.start()
@@ -322,7 +335,7 @@ def Cherry_remover():
 def locationRequest_handler():
     global Own_Position
     esp_locatation = request.get_json()
-    Own_Position = [int(esp_locatation['y']/500)-1, int(esp_locatation['x']/500)-1]
+    Own_Position = [conversion(esp_locatation['y']), conversion(esp_locatation['x'])]
     if setupDone == False:
         return jsonify("Player is not reigstered, run register first!")
     elif energizedState == True:
@@ -335,8 +348,8 @@ def locationRequest_handler():
 def foodRemover(): 
     foodUpdateArray = [0,0]
     foodUpdate = request.get_json()
-    foodUpdateArray[0] = round(foodUpdate['location']['y']/500)
-    foodUpdateArray[1] = round((foodUpdate['location']['x']/500))
+    foodUpdateArray[0] = conversion(foodUpdate['location']['y'])
+    foodUpdateArray[1] = conversion(foodUpdate['location']['x'])
     Score = foodUpdate['score']
     global allPositions
     global Score
@@ -351,8 +364,8 @@ def foodRemover():
 def cherryRemover(): 
     cherryUpdateArray = [0,0]
     cherryUpdate = request.get_json()
-    cherryUpdateArray[0] = round(cherryUpdate['location']['y']/500)
-    cherryUpdateArray[1] = round((cherryUpdate['location']['x']/500))
+    cherryUpdateArray[0] = convserion(cherryUpdate['location']['y'])
+    cherryUpdateArray[1] = convserion(cherryUpdate['location']['x'])
     global allPositions
     if cherryUpdateArray in allPositions:
         allPositions.remove(cherryUpdateArray)
@@ -371,8 +384,8 @@ def energizer():
         global energizedState
         energizedState = True
 
-    energizerUpdateArray[0] = round(energizerUpdate['location']['y']/500)
-    energizerUpdateArray[1] = round((energizerUpdate['location']['x']/500))
+    energizerUpdateArray[0] = conversion(energizerUpdate['location']['y'])
+    energizerUpdateArray[1] = conversion(energizerUpdate['location']['x'])
     global allPositions
     if energizerUpdateArray in allPositions:
         allPositions.remove(energizerUpdateArray)
@@ -385,3 +398,4 @@ def energizer():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
+
