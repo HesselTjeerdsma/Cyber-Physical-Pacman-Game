@@ -26,6 +26,7 @@ energizedState = False
 path = []
 collided = False
 
+
 @app.errorhandler(400)
 def not_found(error):
     return make_response(jsonify( { 'error': 'Bad request' } ), 400)
@@ -210,6 +211,7 @@ def game(Own_state, Own_Position, Others_positions,allPositions,nmap):
         return jsonify(direction(Own_Position-path[-1]))
     else:
         global cherryLocation
+        cherryLocation = []
         if cherryLocation:
             cherryLocation = cherryLocation_toremove
             Others_positions.append(cherryLocation)
