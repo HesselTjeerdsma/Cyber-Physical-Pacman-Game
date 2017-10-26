@@ -344,7 +344,7 @@ def locationRequest_handler():
 
 @app.route('/locationtest', methods = ['GET'])
 def location_thing():
-    return jsonify(esp_locatation):
+    return jsonify(esp_locatation)
 
 @app.route('/event/food', methods = ['POST'])     #TODO: REMOVE FOOD FROM ALLPOSITIONS ARRAY
 def foodRemover(): 
