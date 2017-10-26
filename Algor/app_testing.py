@@ -25,6 +25,7 @@ setupDone = False
 energizedState = False
 path = []
 collided = False
+esp_locatation = [0,0]
 
 @app.errorhandler(400)
 def not_found(error):
@@ -344,6 +345,7 @@ def locationRequest_handler():
 
 @app.route('/locationtest', methods = ['GET'])
 def location_thing():
+    global esp_locatation
     return jsonify(esp_locatation)
 
 @app.route('/event/food', methods = ['POST'])     #TODO: REMOVE FOOD FROM ALLPOSITIONS ARRAY
