@@ -282,6 +282,7 @@ def collision_reset():
 @app.route('/locationstest', methods = ['GET'])
 def test():
     global esp_locatation
+    esp_locatation = [0,0]
     listofthigsprint = []
     listofthigsprint.append(esp_locatation)
     return jsonify(listofthigsprint)
