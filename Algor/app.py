@@ -1,7 +1,6 @@
-#!flask/bin/python
 # A* Pathfinding in Python (2.7)
+# Author: Christian Careaga (christian.careaga7@gmail.com)
 # Please give credit if used
-#https://vrcfpa5qvi.execute-api.eu-west-2.amazonaws.com/dev
 from flask import Flask, jsonify, abort, request, make_response, url_for
 import time
 import numpy
